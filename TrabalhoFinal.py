@@ -123,19 +123,22 @@ class Pedido:
     def imprimir_nota(self):
         data_gregoriana = datetime.fromordinal(self._data)  # Convertendo de volta para data Gregoriana
         print("\n")
-        print("╔══════════════════════════════════════════════════════════════╗")
-        print("║                         NOTA FISCAL                          ║")
-        print("╠══════════════════════════════════════════════════════════════╣")
-        print(f"║ ID DO PEDIDO: {self._id_pedido:<47}║")
-        print(f"║ NOME DO CLIENTE: {self._cliente:<44}║")
-        print(f"║ DATA DO PEDIDO: {data_gregoriana.strftime('%d/%m/%Y'):<45}║")
-        print(f"║ HORA DO PEDIDO: {self._hora.strftime('%H:%M:%S'):<45}║")
-        print("╠══════════════════════════════════════════════════════════════╣")
+        print("╔════════════════════════════════════════════════════════════════╗")
+        print("║                           NOTA FISCAL                          ║")
+        print("╠════════════════════════════════════════════════════════════════╣")
+        print(f"║ ID DO PEDIDO: {self._id_pedido:<47}  ║")
+        print(f"║ NOME DO CLIENTE: {self._cliente:<44}  ║")
+        print(f"║ DATA DO PEDIDO: {data_gregoriana.strftime('%d/%m/%Y'):<45}  ║")
+        print(f"║ HORA DO PEDIDO: {self._hora.strftime('%H:%M:%S'):<45}  ║")
+        print("╠════════════════════════════════════════════════════════════════╣")
         for produto, quantidade, tipo_produto in self._produtos:
-            print(f"║ {tipo_produto:<7} {produto._nome:32} QUANT: {quantidade:<2}  {produto.calcular_preco(quantidade):>5.2f} R$ ║")
-        print("╠══════════════════════════════════════════════════════════════╣")
-        print(f"║ TOTAL: {self.calcular_total():>50.2f} R$ ║")
-        print("╚══════════════════════════════════════════════════════════════╝\n")
+            if tipo_produto == "AÇAI" or tipo_produto == "SORVETE":
+                print(f"║ {tipo_produto:<7} {produto._nome:32} PESO: {quantidade:<4}g  {produto.calcular_preco(quantidade):>5.2f} R$ ║")
+            else:
+                print(f"║ {tipo_produto:<7} {produto._nome:32} QUANT: {quantidade:<4}  {produto.calcular_preco(quantidade):>5.2f} R$ ║")
+        print("╠════════════════════════════════════════════════════════════════╣")
+        print(f"║ TOTAL: {self.calcular_total():>52.2f} R$ ║")
+        print("╚════════════════════════════════════════════════════════════════╝\n")
 
 class Caixa:
     def __init__(self):
@@ -192,7 +195,7 @@ class Caixa:
                 cont = 1
                 print(f"{tipo_produto}")
                 for produto in self._produtos[tipo_produto]:
-                    print(f"{cont} - {produto._nome} - R${produto._preco}")
+                    print(f"{cont} - {produto._nome} - {produto._preco} R$")
                     cont += 1
                 while True:
                     op4 = int(input(f"DIGITE O NÚMERO DO {tipo_produto} DESEJADO: ")) - 1
@@ -276,11 +279,18 @@ def main():
                             if pedido._cliente == nome_cliente:
                                 pedido.imprimir_nota()
                     case 2:
+                        tot=0
                         data_inicial = datetime.strptime(input("DIGITE A DATA INICIAL (DD/MM/AAAA): "), "%d/%m/%Y").toordinal()
                         data_final = datetime.strptime(input("DIGITE A DATA FINAL (DD/MM/AAAA): "), "%d/%m/%Y").toordinal()
                         for pedido in caixa._pedidos:
                             if data_inicial <= pedido._data <= data_final:
                                 pedido.imprimir_nota()
+                                tot += pedido.calcular_total()
+                        print("╔════════════════════════════════════════════════════════════════╗")
+                        print(f"║ TOTAL DE VENDAS NO PERÍODO: {tot:>31.2f} R$ ║")
+                        print("╚════════════════════════════════════════════════════════════════╝\n")
+
+                        print(f"")
                     case 3:
                         caixa.historico_completo()
                     case 4:
