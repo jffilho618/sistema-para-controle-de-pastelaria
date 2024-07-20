@@ -1,6 +1,6 @@
 import abc
 import random
-from datetime import datetime
+from datetime import datetime, time
 
 def menu_principal():
     print("╔══════════════════════════════════════╗")
@@ -12,6 +12,17 @@ def menu_principal():
     print("║ [4] REGISTRAR VENDA                  ║")
     print("║ [5] HISTÓRICO DE VENDAS              ║")
     print("║ [6] IMPRIMIR CARDÁPIO                ║")
+    print("║ [0] SAIR                             ║")
+    print("╚══════════════════════════════════════╝\n")
+
+def menu_historico():
+    print("╔══════════════════════════════════════╗")
+    print("║               HISTORICO              ║")
+    print("╠══════════════════════════════════════╣")
+    print("║ [1] TODAS AS COMPRAS DE UM CLIENTE   ║")
+    print("║ [2] TODAS AS COMPRAS EM UM PERIODO   ║")
+    print("║ [3] HISTÓRICO COMPLETO               ║")
+    print("║ [4] VENDA ESPECÍFICA                 ║")
     print("║ [0] SAIR                             ║")
     print("╚══════════════════════════════════════╝\n")
 
@@ -96,7 +107,9 @@ class Pedido:
         self._cliente = cliente
         self._produtos = []
         self._id_pedido = random.randint(1000, 9999)
-        self._data = datetime.now()
+        now = datetime.now()
+        self._data = now.toordinal()  # Convertendo para data Juliana
+        self._hora = now.time()  # Armazenando a hora
 
     def adicionar_produto(self, produto, quantidade, tipo_produto):
         self._produtos.append((produto, quantidade, tipo_produto))
@@ -108,21 +121,21 @@ class Pedido:
         return total
 
     def imprimir_nota(self):
+        data_gregoriana = datetime.fromordinal(self._data)  # Convertendo de volta para data Gregoriana
         print("\n")
         print("╔══════════════════════════════════════════════════════════════╗")
         print("║                         NOTA FISCAL                          ║")
         print("╠══════════════════════════════════════════════════════════════╣")
         print(f"║ ID DO PEDIDO: {self._id_pedido:<47}║")
         print(f"║ NOME DO CLIENTE: {self._cliente:<44}║")
-        print(f"║ DATA DO PEDIDO: {self._data.strftime('%d/%m/%Y'):<45}║")
-        print(f"║ HORA DO PEDIDO: {self._data.strftime('%H:%M:%S'):<45}║")
+        print(f"║ DATA DO PEDIDO: {data_gregoriana.strftime('%d/%m/%Y'):<45}║")
+        print(f"║ HORA DO PEDIDO: {self._hora.strftime('%H:%M:%S'):<45}║")
         print("╠══════════════════════════════════════════════════════════════╣")
         for produto, quantidade, tipo_produto in self._produtos:
             print(f"║ {tipo_produto:<7} {produto._nome:32} QUANT: {quantidade:<2}  {produto.calcular_preco(quantidade):>5.2f} R$ ║")
         print("╠══════════════════════════════════════════════════════════════╣")
         print(f"║ TOTAL: {self.calcular_total():>50.2f} R$ ║")
         print("╚══════════════════════════════════════════════════════════════╝\n")
-
 
 class Caixa:
     def __init__(self):
@@ -131,7 +144,6 @@ class Caixa:
             'BEBIDA': [],
             'AÇAI': [],
             'SORVETE': []
-
         }
         self._pedidos = []
 
@@ -197,6 +209,11 @@ class Caixa:
             print("VENDA REALIZADA COM SUCESSO!")
         else:
             print("VENDA CANCELADA!")
+            
+    
+    def historico_completo(self):
+        for pedido in self._pedidos:
+            pedido.imprimir_nota()
 
     def imprimir_cardapio(self):
         print("\n╔═══════════════════════════════════════╗")
@@ -217,7 +234,7 @@ def main():
     ac = Acai(59, "AÇAI")
     sv = Sorvete(45, "SORVETE")
     misto = Pastel("MISTO", 10)
-    coca = Bebidas("COCA 350ml", 5)
+    coca = Bebidas("COCA 350ML", 5)
     caixa.adicionar_produto(ac)
     caixa.adicionar_produto(sv)
     caixa.adicionar_produto(misto)
@@ -250,7 +267,27 @@ def main():
             case 4:
                 caixa.registrar_venda()
             case 5:
-                pass
+                menu_historico()
+                op5 = int(input("DIGITE A OPÇÃO DESEJADA: "))
+                match op5:
+                    case 1:
+                        nome_cliente = input("DIGITE O NOME DO CLIENTE: ").upper()
+                        for pedido in caixa._pedidos:
+                            if pedido._cliente == nome_cliente:
+                                pedido.imprimir_nota()
+                    case 2:
+                        data_inicial = datetime.strptime(input("DIGITE A DATA INICIAL (DD/MM/AAAA): "), "%d/%m/%Y").toordinal()
+                        data_final = datetime.strptime(input("DIGITE A DATA FINAL (DD/MM/AAAA): "), "%d/%m/%Y").toordinal()
+                        for pedido in caixa._pedidos:
+                            if data_inicial <= pedido._data <= data_final:
+                                pedido.imprimir_nota()
+                    case 3:
+                        caixa.historico_completo()
+                    case 4:
+                        id_pedido = int(input("DIGITE O ID DO PEDIDO: "))
+                        for pedido in caixa._pedidos:
+                            if pedido._id_pedido == id_pedido:
+                                pedido.imprimir_nota()
             case 6:
                 caixa.imprimir_cardapio()
             case 0:
