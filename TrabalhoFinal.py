@@ -36,9 +36,10 @@ def menu_venda():
     print("╚══════════════════════════════════════╝\n")
 
 class Produto(abc.ABC):
-    def __init__(self, nome, preco):
+    def __init__(self, nome, preco, unidade):
         self._nome = nome
         self._preco = preco
+        self._unidade = unidade
 
     @abc.abstractmethod
     def calcular_preco(self, quantidade):
@@ -49,9 +50,8 @@ class Produto(abc.ABC):
         pass
 
 class Bebidas(Produto):
-    def __init__(self, nome, preco, volume):
-        super().__init__(nome, preco)
-        self._volume = volume
+    def __init__(self, nome, preco, unidade = "UNI"):
+        super().__init__(nome, preco, unidade)
 
     def calcular_preco(self, quantidade):
         return self._preco * quantidade
@@ -59,11 +59,10 @@ class Bebidas(Produto):
     def editar(self):
         self._nome = input("DIGITE O NOVO NOME DA BEBIDA: ").upper()
         self._preco = float(input("DIGITE O NOVO PREÇO DA BEBIDA: "))
-        self._volume = float(input("DIGITE O NOVO VOLUME DA BEBIDA: "))
 
 class Pastel(Produto):
-    def __init__(self, nome, preco):
-        super().__init__(nome, preco)
+    def __init__(self, nome, preco, unidade = "UNI"):
+        super().__init__(nome, preco, unidade)
 
     def calcular_preco(self, quantidade):
         return self._preco * quantidade
@@ -74,7 +73,7 @@ class Pastel(Produto):
 
 class Acai(Produto):
     def __init__(self, preco, nome):
-        super().__init__("AÇAI", preco)
+        super().__init__("AÇAI", preco, "KG")
 
     def calcular_preco(self, peso):
         return self._preco * (peso / 1000)
@@ -84,7 +83,7 @@ class Acai(Produto):
 
 class Sorvete(Produto):
     def __init__(self, preco, nome):
-        super().__init__("SORVETE", preco)
+        super().__init__("SORVETE", preco, "KG")
 
     def calcular_preco(self, peso):
         return self._preco * (peso / 1000)
@@ -99,38 +98,40 @@ class Pedido:
         self._id_pedido = random.randint(1000, 9999)
         self._data = datetime.now()
 
-    def adicionar_produto(self, produto, quantidade):
-        self._produtos.append((produto, quantidade))
+    def adicionar_produto(self, produto, quantidade, tipo_produto):
+        self._produtos.append((produto, quantidade, tipo_produto))
 
     def calcular_total(self):
         total = 0
-        for produto, quantidade in self._produtos:
+        for produto, quantidade, tipo_produto in self._produtos:
             total += produto.calcular_preco(quantidade)
         return total
 
     def imprimir_nota(self):
         print("\n")
-        print("╔═══════════════════════════════════════════════════╗")
-        print("║                    NOTA FISCAL                    ║")
-        print("╠═══════════════════════════════════════════════════╣")
-        print(f"║ ID DO PEDIDO: {self._id_pedido} {" ":22}         ║")
-        print(f"║ NOME DO CLIENTE: {self._cliente:33}║")
-        print(f"║ DATA: {self._data.strftime('%d/%m/%Y'):44}║")
-        print(f"║ HORA: {self._data.strftime('%H:%M:%S'):44}║")
-        print("╠═══════════════════════════════════════════════════╣")
-        for produto, quantidade in self._produtos:
-            print(f"║ {produto._nome:24} QTD: {quantidade:2} - {produto.calcular_preco(quantidade):11.2f} R$ ║")
-        print("╠═══════════════════════════════════════════════════╣")
-        print(f"║ TOTAL: {self.calcular_total():39.2f} R$ ║")
-        print("╚═══════════════════════════════════════════════════╝\n")
+        print("╔══════════════════════════════════════════════════════════════╗")
+        print("║                         NOTA FISCAL                          ║")
+        print("╠══════════════════════════════════════════════════════════════╣")
+        print(f"║ ID DO PEDIDO: {self._id_pedido:<47}║")
+        print(f"║ NOME DO CLIENTE: {self._cliente:<44}║")
+        print(f"║ DATA DO PEDIDO: {self._data.strftime('%d/%m/%Y'):<45}║")
+        print(f"║ HORA DO PEDIDO: {self._data.strftime('%H:%M:%S'):<45}║")
+        print("╠══════════════════════════════════════════════════════════════╣")
+        for produto, quantidade, tipo_produto in self._produtos:
+            print(f"║ {tipo_produto:<7} {produto._nome:32} QUANT: {quantidade:<2}  {produto.calcular_preco(quantidade):>5.2f} R$ ║")
+        print("╠══════════════════════════════════════════════════════════════╣")
+        print(f"║ TOTAL: {self.calcular_total():>50.2f} R$ ║")
+        print("╚══════════════════════════════════════════════════════════════╝\n")
+
 
 class Caixa:
     def __init__(self):
         self._produtos = {
             'PASTEL': [],
-            'BEBIDAS': [],
+            'BEBIDA': [],
             'AÇAI': [],
             'SORVETE': []
+
         }
         self._pedidos = []
 
@@ -138,7 +139,7 @@ class Caixa:
         if isinstance(produto, Pastel):
             self._produtos['PASTEL'].append(produto)
         elif isinstance(produto, Bebidas):
-            self._produtos['BEBIDAS'].append(produto)
+            self._produtos['BEBIDA'].append(produto)
         elif isinstance(produto, Acai):
             self._produtos['AÇAI'].append(produto)
         elif isinstance(produto, Sorvete):
@@ -172,7 +173,7 @@ class Caixa:
             if op3 == 0:
                 break
             elif op3 in [1, 2, 3, 4]:
-                tipo_produto = {1: 'PASTEL', 2: 'BEBIDAS', 3: 'AÇAI', 4: 'SORVETE'}[op3]
+                tipo_produto = {1: 'PASTEL', 2: 'BEBIDA', 3: 'AÇAI', 4: 'SORVETE'}[op3]
                 if not self._produtos[tipo_produto]:
                     print(f"SEM {tipo_produto} DISPONÍVEIS NO MOMENTO")
                     continue
@@ -181,16 +182,21 @@ class Caixa:
                 for produto in self._produtos[tipo_produto]:
                     print(f"{cont} - {produto._nome} - R${produto._preco}")
                     cont += 1
-                op4 = int(input(f"DIGITE O NÚMERO DO {tipo_produto} DESEJADO: ")) - 1
+                while True:
+                    op4 = int(input(f"DIGITE O NÚMERO DO {tipo_produto} DESEJADO: ")) - 1
+                    if 0 <= op4 < len(self._produtos[tipo_produto]):
+                        break
+                    else:
+                        print("OPÇÃO INVÁLIDA. TENTE NOVAMENTE.")
                 quantidade = int(input("DIGITE A QUANTIDADE DESEJADA: "))
-                pedido.adicionar_produto(self._produtos[tipo_produto][op4], quantidade)
-
+                pedido.adicionar_produto(self._produtos[tipo_produto][op4], quantidade, tipo_produto)
+        pedido.imprimir_nota()
         confirmar = input("DESEJA REALIZAR A VENDA? (S/N): ").upper()
         if confirmar == 'S':
             self._pedidos.append(pedido)
-            pedido.imprimir_nota()
+            print("VENDA REALIZADA COM SUCESSO!")
         else:
-            print("VENDA CANCELADA")
+            print("VENDA CANCELADA!")
 
     def imprimir_cardapio(self):
         print("\n╔═══════════════════════════════════════╗")
@@ -199,23 +205,23 @@ class Caixa:
 
         for tipo, lista_produtos in self._produtos.items():
             print(f"{tipo.upper()}")
-            print(f"╔═══════════════════════════════════════╗")
-            print(f"║              NOME            ║ PREÇO  ║")
-            print(f"╠═══════════════════════════════════════╣")
+            print("╔═════════════════════════════════════════════════╗")
+            print("║              NOME            ║ PREÇO  ║ UNIDADE ║")
+            print("╠═════════════════════════════════════════════════╣")
             for produto in lista_produtos:
-                print(f"║ {produto._nome:28} ║ {produto._preco:6.2f} ║")
-            print("╚═══════════════════════════════════════╝\n")
+                print(f"║ {produto._nome:28} ║ {produto._preco:6.2f} ║ {produto._unidade:7} ║")
+            print("╚═════════════════════════════════════════════════╝\n")
 
 def main():
     caixa = Caixa()
     ac = Acai(59, "AÇAI")
     sv = Sorvete(45, "SORVETE")
     misto = Pastel("MISTO", 10)
-    coca = Bebidas("COCA", 5, 350)
+    coca = Bebidas("COCA 350ml", 5)
     caixa.adicionar_produto(ac)
     caixa.adicionar_produto(sv)
     caixa.adicionar_produto(misto)
-    #caixa.adicionar_produto(coca)
+    caixa.adicionar_produto(coca)
     op = 11
     while op != 0:
         menu_principal()
@@ -233,8 +239,7 @@ def main():
                     case 2:
                         nome = input("DIGITE O NOME DA BEBIDA: ").upper()
                         preco = float(input("DIGITE O PREÇO DA BEBIDA: "))
-                        volume = float(input("DIGITE O VOLUME DA BEBIDA: "))
-                        bebida = Bebidas(nome, preco, volume)
+                        bebida = Bebidas(nome, preco)
                         caixa.adicionar_produto(bebida)
             case 2:
                 nome_produto = input("DIGITE O NOME DO PRODUTO QUE DESEJA EDITAR: ").upper()
