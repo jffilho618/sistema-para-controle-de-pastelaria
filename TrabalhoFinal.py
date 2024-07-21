@@ -43,6 +43,8 @@ def menu_venda():
     print("║ [2] BEBIDA                           ║")
     print("║ [3] AÇAI                             ║")
     print("║ [4] SORVETE                          ║")
+    print("║ [5] CUZCUZ                           ║")
+    print("║ [6] MASSA                            ║")
     print("║ [0] REGISTRAR VENDA                  ║")
     print("╚══════════════════════════════════════╝\n")
 
@@ -102,6 +104,26 @@ class Sorvete(Produto):
     def editar(self):
         self._preco = float(input("DIGITE O NOVO PREÇO DO SORVETE: "))
 
+class Cuzcuz(Produto):
+    def __init__(self, nome, preco):
+        super().__init__(nome, preco, "UNI") 
+
+    def calcular_preco(self, quantidade):
+        return self._preco * quantidade
+
+    def editar(self):
+        self._preco = float(input("DIGITE O NOVO PREÇO DO CUZCUZ: "))
+
+class Massa(Produto):
+    def __init__(self, nome, preco):
+        super().__init__(nome, preco, 'UNI')
+
+    def calcular_preco(self, quantidade):
+        return self._preco * quantidade
+
+    def editar(self):
+        self._preco = float(input("DIGITE O NOVO PREÇO DA MASSA: "))
+
 class Pedido:
     def __init__(self, cliente):
         self._cliente = cliente
@@ -123,22 +145,22 @@ class Pedido:
     def imprimir_nota(self):
         data_gregoriana = datetime.fromordinal(self._data)  # Convertendo de volta para data Gregoriana
         print("\n")
-        print("╔════════════════════════════════════════════════════════════════╗")
-        print("║                           NOTA FISCAL                          ║")
-        print("╠════════════════════════════════════════════════════════════════╣")
-        print(f"║ ID DO PEDIDO: {self._id_pedido:<47}  ║")
-        print(f"║ NOME DO CLIENTE: {self._cliente:<44}  ║")
-        print(f"║ DATA DO PEDIDO: {data_gregoriana.strftime('%d/%m/%Y'):<45}  ║")
-        print(f"║ HORA DO PEDIDO: {self._hora.strftime('%H:%M:%S'):<45}  ║")
-        print("╠════════════════════════════════════════════════════════════════╣")
+        print("╔══════════════════════════════════════════════════════════════════════════════════╗")
+        print("║                                    NOTA FISCAL                                   ║")
+        print("╠══════════════════════════════════════════════════════════════════════════════════╣")
+        print(f"║ ID DO PEDIDO: {self._id_pedido:<65}  ║")
+        print(f"║ NOME DO CLIENTE: {self._cliente:<62}  ║")
+        print(f"║ DATA DO PEDIDO: {data_gregoriana.strftime('%d/%m/%Y'):<63}  ║")
+        print(f"║ HORA DO PEDIDO: {self._hora.strftime('%H:%M:%S'):<63}  ║")
+        print("╠══════════════════════════════════════════════════════════════════════════════════╣")
         for produto, quantidade, tipo_produto in self._produtos:
             if tipo_produto == "AÇAI" or tipo_produto == "SORVETE":
-                print(f"║ {tipo_produto:<7} {produto._nome:32} PESO: {quantidade:<4}g  {produto.calcular_preco(quantidade):>5.2f} R$ ║")
+                print(f"║ {tipo_produto:<7} {produto._nome:50} PESO: {quantidade:<4}g  {produto.calcular_preco(quantidade):>5.2f} R$ ║")
             else:
-                print(f"║ {tipo_produto:<7} {produto._nome:32} QUANT: {quantidade:<4}  {produto.calcular_preco(quantidade):>5.2f} R$ ║")
-        print("╠════════════════════════════════════════════════════════════════╣")
-        print(f"║ TOTAL: {self.calcular_total():>52.2f} R$ ║")
-        print("╚════════════════════════════════════════════════════════════════╝\n")
+                print(f"║ {tipo_produto:<7} {produto._nome:50} QUANT: {quantidade:<4}  {produto.calcular_preco(quantidade):>5.2f} R$ ║")
+        print("╠══════════════════════════════════════════════════════════════════════════════════╣")
+        print(f"║ TOTAL: {self.calcular_total():>70.2f} R$ ║")
+        print("╚══════════════════════════════════════════════════════════════════════════════════╝\n")
 
 class Caixa:
     def __init__(self):
@@ -146,7 +168,15 @@ class Caixa:
             'PASTEL': [],
             'BEBIDA': [],
             'AÇAI': [],
-            'SORVETE': []
+            'SORVETE': [],
+            'CUZCUZ': {'BASES': ["CARNE","FRANGO","CALABRESA","SALCICHA","BACON","PRESUNTO"],
+                       'ACOMPANHAMENTOS': ["AZEITONA","MILHO","ERVILHA","TOMATE","CEBOLA","OREGANO","PIMENTA CALABRESA"],
+                       'QUEIJOS': ["MUSSARELA","COALHO","CATUPIRY"]},
+            'MASSA': {'MOLHOS': ["BRANCO","ROSÊ"], 'BASES': ["CARNE","FRANGO","CALABRESA","SALCICHA","BACON","PRESUNTO"],
+                      'ACOMPANHAMENTOS': ["AZEITONA","MILHO","ERVILHA","TOMATE","CEBOLA","OREGANO","PIMENTA CALABRESA"],
+                      'QUEIJOS': ["MUSSARELA","COALHO","CATUPIRY","PARMESÃO"]}
+            
+
         }
         self._pedidos = []
 
@@ -159,6 +189,10 @@ class Caixa:
             self._produtos['AÇAI'].append(produto)
         elif isinstance(produto, Sorvete):
             self._produtos['SORVETE'].append(produto)
+        elif isinstance(produto, Cuzcuz):
+            self._produtos['CUZCUZ'].append(produto)
+        elif isinstance(produto, Massa):
+            self._produtos['MASSA'].append(produto)
 
     def editar_produto(self, nome_produto):
         for tipo, lista_produtos in self._produtos.items():
@@ -187,24 +221,155 @@ class Caixa:
             op3 = int(input("DIGITE A OPÇÃO DESEJADA: "))
             if op3 == 0:
                 break
-            elif op3 in [1, 2, 3, 4]:
-                tipo_produto = {1: 'PASTEL', 2: 'BEBIDA', 3: 'AÇAI', 4: 'SORVETE'}[op3]
-                if not self._produtos[tipo_produto]:
-                    print(f"SEM {tipo_produto} DISPONÍVEIS NO MOMENTO")
-                    continue
+            elif op3 in [1, 2, 3, 4, 5, 6]:
+                tipo_produto = {1: 'PASTEL', 2: 'BEBIDA', 3: 'AÇAI', 4: 'SORVETE' ,5: 'CUZCUZ', 6: 'MASSA'}[op3]
                 cont = 1
                 print(f"{tipo_produto}")
-                for produto in self._produtos[tipo_produto]:
-                    print(f"{cont} - {produto._nome} - {produto._preco} R$")
-                    cont += 1
-                while True:
-                    op4 = int(input(f"DIGITE O NÚMERO DO {tipo_produto} DESEJADO: ")) - 1
-                    if 0 <= op4 < len(self._produtos[tipo_produto]):
-                        break
-                    else:
-                        print("OPÇÃO INVÁLIDA. TENTE NOVAMENTE.")
-                quantidade = int(input("DIGITE A QUANTIDADE DESEJADA: "))
-                pedido.adicionar_produto(self._produtos[tipo_produto][op4], quantidade, tipo_produto)
+                if tipo_produto == "CUZCUZ":
+                    desc = []
+
+                    print("\nBASES")
+                    for i in range(3):
+                        print(f"0 - CANCELAR")
+                        for base in self._produtos[tipo_produto]['BASES']:
+                            print(f"{cont} - {base}")
+                            cont += 1
+                        
+                        while True:
+                            op4 = int(input(f"DIGITE O NÚMERO DO  DESEJADO: ")) - 1
+                            if op4 == -1:
+                                break
+                            if 0 <= op4 < len(self._produtos[tipo_produto]['BASES']):
+                                desc.append(self._produtos[tipo_produto]['BASES'][op4])
+                                break
+                            else:
+                                print("OPÇÃO INVÁLIDA. TENTE NOVAMENTE.")
+                        cont = 1
+                    cont = 1
+
+                    print("\nACOMPANHAMENTOS")
+                    while True:
+                        print(f"0 - CANCELAR")
+                        for acomp in self._produtos[tipo_produto]['ACOMPANHAMENTOS']:
+                            print(f"{cont} - {acomp}")
+                            cont += 1
+                        while True:
+                            op4 = int(input(f"DIGITE O NÚMERO DO  DESEJADO: ")) - 1
+                            if op4 == -1:
+                                break
+                            if 0 <= op4 < len(self._produtos[tipo_produto]['ACOMPANHAMENTOS']):
+                                desc.append(self._produtos[tipo_produto]['ACOMPANHAMENTOS'][op4])
+                                break
+                            else:
+                                print("OPÇÃO INVÁLIDA. TENTE NOVAMENTE.")
+                        cont = 1
+                        if op4 == -1:
+                            break
+                    cont = 1
+
+                    print("\nQUEIJOS")
+                    for queijo in self._produtos[tipo_produto]['QUEIJOS']:
+                        print(f"{cont} - {queijo}")
+                        cont += 1
+
+                    op4 = int(input(f"DIGITE O NÚMERO DO  DESEJADO: ")) - 1
+                    if 0 <= op4 < len(self._produtos[tipo_produto]['QUEIJOS']):
+                        desc.append(self._produtos[tipo_produto]['QUEIJOS'][op4])
+                        
+                    desc = " ".join(desc)
+                    print(desc)
+                    c = Cuzcuz(desc, 10)
+                    quantidade = int(input("DIGITE A QUANTIDADE DESEJADA: "))
+                    pedido.adicionar_produto(c, quantidade, tipo_produto)
+
+                elif tipo_produto == "MASSA":
+                    desc = []
+
+                    print("\nMOLHOS")
+                    for molho in self._produtos[tipo_produto]['MOLHOS']:
+                        print(f"{cont} - {molho}")
+                        cont += 1
+                    while True:
+                        op4 = int(input(f"DIGITE O NÚMERO DO  DESEJADO: ")) - 1
+                        if 0 <= op4 < len(self._produtos[tipo_produto]['MOLHOS']):
+                            desc.append(self._produtos[tipo_produto]['MOLHOS'][op4])
+                            break
+                        else:
+                            print("OPÇÃO INVÁLIDA. TENTE NOVAMENTE.")
+                    cont = 1
+
+
+                    print("\nBASES")
+                    for i in range(3):
+                        print(f"0 - CANCELAR")
+                        for base in self._produtos[tipo_produto]['BASES']:
+                            print(f"{cont} - {base}")
+                            cont += 1
+                        
+                        while True:
+                            op4 = int(input(f"DIGITE O NÚMERO DO  DESEJADO: ")) - 1
+                            if op4 == -1:
+                                break
+                            if 0 <= op4 < len(self._produtos[tipo_produto]['BASES']):
+                                desc.append(self._produtos[tipo_produto]['BASES'][op4])
+                                break
+                            else:
+                                print("OPÇÃO INVÁLIDA. TENTE NOVAMENTE.")
+                        cont = 1
+                    cont = 1
+
+                    print("\nACOMPANHAMENTOS")
+                    while True:
+                        print(f"0 - CANCELAR")
+                        for acomp in self._produtos[tipo_produto]['ACOMPANHAMENTOS']:
+                            print(f"{cont} - {acomp}")
+                            cont += 1
+                        while True:
+                            op4 = int(input(f"DIGITE O NÚMERO DO  DESEJADO: ")) - 1
+                            if op4 == -1:
+                                break
+                            if 0 <= op4 < len(self._produtos[tipo_produto]['ACOMPANHAMENTOS']):
+                                desc.append(self._produtos[tipo_produto]['ACOMPANHAMENTOS'][op4])
+                                break
+                            else:
+                                print("OPÇÃO INVÁLIDA. TENTE NOVAMENTE.")
+                        cont = 1
+                        if op4 == -1:
+                            break
+                    cont = 1
+
+                    print("\nQUEIJOS")
+                    for queijo in self._produtos[tipo_produto]['QUEIJOS']:
+                        print(f"{cont} - {queijo}")
+                        cont += 1
+
+                    op4 = int(input(f"DIGITE O NÚMERO DO  DESEJADO: ")) - 1
+                    if 0 <= op4 < len(self._produtos[tipo_produto]['QUEIJOS']):
+                        desc.append(self._produtos[tipo_produto]['QUEIJOS'][op4])
+                        
+                    desc = " ".join(desc)
+                    print(desc)
+                    m = Massa(desc, 18)
+                    quantidade = int(input("DIGITE A QUANTIDADE DESEJADA: "))
+                    pedido.adicionar_produto(m, quantidade, tipo_produto)
+
+
+                else:
+                    if not self._produtos[tipo_produto]:
+                        print(f"SEM {tipo_produto} DISPONÍVEIS NO MOMENTO")
+                        continue
+                    for produto in self._produtos[tipo_produto]:
+                        print(f"{cont} - {produto._nome} - {produto._preco} R$")
+                        cont += 1
+                    while True:
+                        op4 = int(input(f"DIGITE O NÚMERO DO {tipo_produto} DESEJADO: ")) - 1
+                        if 0 <= op4 < len(self._produtos[tipo_produto]):
+                            break
+                        else:
+                            print("OPÇÃO INVÁLIDA. TENTE NOVAMENTE.")
+                    quantidade = int(input("DIGITE A QUANTIDADE DESEJADA: "))
+                    pedido.adicionar_produto(self._produtos[tipo_produto][op4], quantidade, tipo_produto)
+
         pedido.imprimir_nota()
         confirmar = input("DESEJA REALIZAR A VENDA? (S/N): ").upper()
         if confirmar == 'S':
