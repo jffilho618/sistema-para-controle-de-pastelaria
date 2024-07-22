@@ -45,6 +45,7 @@ def menu_venda():
     print("║ [4] SORVETE                          ║")
     print("║ [5] CUZCUZ                           ║")
     print("║ [6] MASSA                            ║")
+    print("║ [7] PETISCO                          ║")
     print("║ [0] REGISTRAR VENDA                  ║")
     print("╚══════════════════════════════════════╝\n")
 
@@ -124,6 +125,16 @@ class Massa(Produto):
     def editar(self):
         self._preco = float(input("DIGITE O NOVO PREÇO DA MASSA: "))
 
+class Petisco(Produto):
+    def __init__(self, nome, preco):
+        super().__init__(nome, preco, 'UNI')
+
+    def calcular_preco(self, quantidade):
+        return self._preco * quantidade
+
+    def editar(self):
+        self._preco = float(input("DIGITE O NOVO PREÇO DO PETISCO: "))
+
 class Pedido:
     def __init__(self, cliente):
         self._cliente = cliente
@@ -174,7 +185,8 @@ class Caixa:
                        'QUEIJOS': ["MUSSARELA","COALHO","CATUPIRY"]},
             'MASSA': {'MOLHOS': ["BRANCO","ROSÊ"], 'BASES': ["CARNE","FRANGO","CALABRESA","SALCICHA","BACON","PRESUNTO"],
                       'ACOMPANHAMENTOS': ["AZEITONA","MILHO","ERVILHA","TOMATE","CEBOLA","OREGANO","PIMENTA CALABRESA"],
-                      'QUEIJOS': ["MUSSARELA","COALHO","CATUPIRY","PARMESÃO"]}
+                      'QUEIJOS': ["MUSSARELA","COALHO","CATUPIRY","PARMESÃO"],},
+            'PETISCO': []
             
 
         }
@@ -193,6 +205,8 @@ class Caixa:
             self._produtos['CUZCUZ'].append(produto)
         elif isinstance(produto, Massa):
             self._produtos['MASSA'].append(produto)
+        elif isinstance(produto, Petisco):
+            self._produtos['PETISCO'].append(produto)
 
     def editar_produto(self, nome_produto):
         for tipo, lista_produtos in self._produtos.items():
@@ -221,8 +235,8 @@ class Caixa:
             op3 = int(input("DIGITE A OPÇÃO DESEJADA: "))
             if op3 == 0:
                 break
-            elif op3 in [1, 2, 3, 4, 5, 6]:
-                tipo_produto = {1: 'PASTEL', 2: 'BEBIDA', 3: 'AÇAI', 4: 'SORVETE' ,5: 'CUZCUZ', 6: 'MASSA'}[op3]
+            elif op3 in [1, 2, 3, 4, 5, 6, 7]:
+                tipo_produto = {1: 'PASTEL', 2: 'BEBIDA', 3: 'AÇAI', 4: 'SORVETE' ,5: 'CUZCUZ', 6: 'MASSA', 7:'PETISCO'}[op3]
                 cont = 1
                 print(f"{tipo_produto}")
                 if tipo_produto == "CUZCUZ":
@@ -389,13 +403,14 @@ class Caixa:
         print("╚═══════════════════════════════════════╝")
 
         for tipo, lista_produtos in self._produtos.items():
-            print(f"{tipo.upper()}")
-            print("╔═════════════════════════════════════════════════╗")
-            print("║              NOME            ║ PREÇO  ║ UNIDADE ║")
-            print("╠═════════════════════════════════════════════════╣")
-            for produto in lista_produtos:
-                print(f"║ {produto._nome:28} ║ {produto._preco:6.2f} ║ {produto._unidade:7} ║")
-            print("╚═════════════════════════════════════════════════╝\n")
+            if tipo != "CUZCUZ" and tipo != "MASSA":
+                print(f"{tipo.upper()}")
+                print("╔═════════════════════════════════════════════════╗")
+                print("║              NOME            ║ PREÇO  ║ UNIDADE ║")
+                print("╠═════════════════════════════════════════════════╣")
+                for produto in lista_produtos:
+                    print(f"║ {produto._nome:28} ║ {produto._preco:6.2f} ║ {produto._unidade:7} ║")
+                print("╚═════════════════════════════════════════════════╝\n")
 
 def main():
     caixa = Caixa()
@@ -403,10 +418,12 @@ def main():
     sv = Sorvete(45, "SORVETE")
     misto = Pastel("MISTO", 10)
     coca = Bebidas("COCA 350ML", 5)
+    porcao = Petisco("PORÇÃO DE BATATA SIMPLES", 15)
     caixa.adicionar_produto(ac)
     caixa.adicionar_produto(sv)
     caixa.adicionar_produto(misto)
     caixa.adicionar_produto(coca)
+    caixa.adicionar_produto(porcao)
     op = 11
     while op != 0:
         menu_principal()
