@@ -10,8 +10,9 @@ def menu_principal():
     print("║ [2] EDITAR PRODUTO                   ║")
     print("║ [3] REMOVER PRODUTO                  ║")
     print("║ [4] REGISTRAR VENDA                  ║")
-    print("║ [5] HISTÓRICO DE VENDAS              ║")
-    print("║ [6] IMPRIMIR CARDÁPIO                ║")
+    print("║ [5] EDITAR PEDIDO                    ║")
+    print("║ [6] HISTÓRICO DE VENDAS              ║")
+    print("║ [7] IMPRIMIR CARDÁPIO                ║")
     print("║ [0] SAIR                             ║")
     print("╚══════════════════════════════════════╝\n")
 
@@ -32,6 +33,7 @@ def menu_cadastro():
     print("╠══════════════════════════════════════╣")
     print("║ [1] PASTEL                           ║")
     print("║ [2] BEBIDA                           ║")
+    print("║ [3] PETISCO                          ║")
     print("║ [0] MENU ANTERIOR                    ║")
     print("╚══════════════════════════════════════╝\n")
 
@@ -46,8 +48,24 @@ def menu_venda():
     print("║ [5] CUZCUZ                           ║")
     print("║ [6] MASSA                            ║")
     print("║ [7] PETISCO                          ║")
-    print("║ [0] REGISTRAR VENDA                  ║")
+    print("║ [8] FINALIZAR PEDIDO                 ║")
+    print("║ [9] CANCELAR PEDIDO                  ║")
+    print("║ [0] MENU ANTERIOR                    ║")
     print("╚══════════════════════════════════════╝\n")
+
+def menu_editar_pedido():
+    print("╔══════════════════════════════════════╗")
+    print("║           EDIÇÃO DE PEDIDO           ║")
+    print("╠══════════════════════════════════════╣")
+    print("║ [1] REMOVER PRODUTO                  ║")
+    print("║ [2] ALTERAR QUANTIDADE               ║")
+    print("║ [3] ALTERAR CLIENTE                  ║")
+    print("║ [4] CANCELAR PEDIDO                  ║")
+    print("║ [0] MENU ANTERIOR                    ║")
+    print("╚══════════════════════════════════════╝\n")
+
+
+
 
 class Produto(abc.ABC):
     def __init__(self, nome, preco, unidade):
@@ -157,10 +175,10 @@ class Petisco(Produto):
             print("Entrada inválida! Por favor, insira um valor numérico para o preço.")
 
 class Pedido:
-    def __init__(self, cliente):
+    def __init__(self, cliente, id_pedido):
         self._cliente = cliente
         self._produtos = []
-        self._id_pedido = random.randint(1000, 9999)
+        self._id_pedido = id_pedido
         now = datetime.now()
         self._data = now.toordinal()  # Convertendo para data Juliana
         self._hora = now.time()  # Armazenando a hora
@@ -201,7 +219,7 @@ class Caixa:
             'BEBIDA': [],
             'AÇAI': [],
             'SORVETE': [],
-            'CUZCUZ': {'BASES': ["CARNE","FRANGO","CALABRESA","SALCICHA","BACON","PRESUNTO"],
+            'CUZCUZ': {'BASES': ["CARNE","FRANGO","CALABRESA","SALCICHA","BACON","PRESUNTO","OVO"],
                        'ACOMPANHAMENTOS': ["AZEITONA","MILHO","ERVILHA","TOMATE","CEBOLA","OREGANO","PIMENTA CALABRESA"],
                        'QUEIJOS': ["MUSSARELA","COALHO","CATUPIRY"]},
             'MASSA': {'MOLHOS': ["BRANCO","ROSÊ"], 'BASES': ["CARNE","FRANGO","CALABRESA","SALCICHA","BACON","PRESUNTO"],
@@ -212,6 +230,9 @@ class Caixa:
         self._pedidos = []
 
     def adicionar_produto(self, produto):
+        if produto._preco <= 0:
+            print("PREÇO INVÁLIDO! PRODUTO NÃO CADASTRADO!")
+            return
         if isinstance(produto, Pastel):
             self._produtos['PASTEL'].append(produto)
         elif isinstance(produto, Bebidas):
@@ -229,42 +250,150 @@ class Caixa:
 
     def editar_produto(self, nome_produto):
         try:
-            for tipo, lista_produtos in self._produtos.items():
-                for produto in lista_produtos:
-                    if produto._nome == nome_produto:
-                        produto.editar()
-                        print(f"{tipo} EDITADO COM SUCESSO!")
-                        return
+            for tipo, conteudo in self._produtos.items():                
+                if isinstance(conteudo, list):
+                    for produto in conteudo:
+                        if produto._nome == nome_produto:
+                            print("╔═════════════════════════════════════════════════╗")
+                            print("║              NOME            ║ PREÇO  ║ UNIDADE ║")
+                            print("╠═════════════════════════════════════════════════╣")    
+                            print(f"║ {produto._nome:28} ║ {produto._preco:6.2f} ║ {produto._unidade:7} ║")
+                            print("╚═════════════════════════════════════════════════╝\n")
+                            print("\n1 - EDITAR")
+                            print("0 - CANCELAR")
+                            try:
+                                op = int(input("DIGITE A OPÇÃO DESEJADA: "))
+                                if op == 0:
+                                    return
+                                elif op == 1:
+                                    produto.editar()
+                                    print(f"{tipo} EDITADO COM SUCESSO!")
+                                    return
+                                else:
+                                    print("OPÇÃO INVÁLIDA! TENTE NOVAMENTE.")
+                                    continue
+                            except ValueError:
+                                print("OPÇÃO INVÁLIDA! TENTE NOVAMENTE.")
+                                continue
+                            
+           
             print("PRODUTO NÃO ENCONTRADO!")
         except Exception as e:
-            print(f"Erro ao editar produto: {e}")
+            print(f"Erro: {str(e)}")
 
     def remover_produto(self, nome_produto):
         try:
             for tipo, lista_produtos in self._produtos.items():
                 for produto in lista_produtos:
                     if produto._nome == nome_produto:
-                        lista_produtos.remove(produto)
-                        print(f"{tipo} REMOVIDO COM SUCESSO!")
-                        return
+                        if tipo == "AÇAI" or tipo == "SORVETE":
+                            print("NÃO É POSSÍVEL REMOVER AÇAÍ OU SORVETE!")
+                            return
+                        print("╔═════════════════════════════════════════════════╗")
+                        print("║              NOME            ║ PREÇO  ║ UNIDADE ║")
+                        print("╠═════════════════════════════════════════════════╣")    
+                        print(f"║ {produto._nome:28} ║ {produto._preco:6.2f} ║ {produto._unidade:7} ║")
+                        print("╚═════════════════════════════════════════════════╝\n")
+                        print("\n1 - REMOVER")
+                        print("0 - CANCELAR")
+                        try:
+                            op = int(input("DIGITE A OPÇÃO DESEJADA: "))
+                            if op == 0:
+                                return
+                            elif op == 1:
+                                lista_produtos.remove(produto)
+                                print(f"{tipo} REMOVIDO COM SUCESSO!")
+                                return
+                            else:
+                                print("OPÇÃO INVÁLIDA! TENTE NOVAMENTE.")
+                                continue
+                        except ValueError:
+                            print("OPÇÃO INVÁLIDA! TENTE NOVAMENTE.")
+                            continue
+                        
             print("PRODUTO NÃO ENCONTRADO!")
         except Exception as e:
-            print(f"Erro ao remover produto: {e}")
+            print(f"PRODUTO NÃO ENCONTRADO!")
+    
+    def cancelar_pedido(self,pedido):
+        try:
+            
+            pedido.imprimir_nota()
+            confirmar = input("DESEJA CANCELAR O PEDIDO? (S/N): ").upper()
+            if confirmar == 'S':
+                self._pedidos.remove(pedido)
+                print("PEDIDO CANCELADO COM SUCESSO!")
+                return
+            else:
+                print("CANCELAMENTO DE PEDIDO CANCELADO!")
+                return
+        except ValueError:
+            print("ID INVÁLIDO! TENTE NOVAMENTE.")
+
+    def decrementar_pedido(self, pedido):
+        pedido.imprimir_nota()
+        try:
+            prod = input("DIGITE O NOME DO PRODUTO QUE DESEJA REMOVER DO PEDIDO: ").upper()
+            for produto, quantidade, tipo_produto in pedido._produtos:
+                if produto._nome == prod:
+                    pedido._produtos.remove((produto, quantidade, tipo_produto))
+                    pedido.imprimir_nota()
+                    print("PRODUTO REMOVIDO COM SUCESSO!")
+                    if not pedido._produtos:
+                        self._pedidos.remove(pedido)
+                        print("PEDIDO CANCELADO!")
+                    return
+            else:
+                print("PRODUTO NÃO ENCONTRADO!")
+        except Exception as e:
+            print("ERRO AO REMOVER PRODUTO DO PEDIDO!")
+    
+    def alterar_quantidade(self, pedido):
+        try:
+            pedido.imprimir_nota()
+            prod = input("DIGITE O NOME DO PRODUTO QUE DESEJA ALTERAR A QUANTIDADE: ").upper()
+            for produto, quantidade, tipo_produto in pedido._produtos:
+                if produto._nome == prod:
+                    nova_quantidade = int(input("DIGITE A NOVA QUANTIDADE: "))
+                    if nova_quantidade <= 0:
+                        print("QUANTIDADE INVÁLIDA! TENTE NOVAMENTE.")
+                        continue
+                    pedido._produtos.remove((produto, quantidade, tipo_produto))
+                    pedido.adicionar_produto(produto, nova_quantidade, tipo_produto)
+                    pedido.imprimir_nota()
+                    print("QUANTIDADE ALTERADA COM SUCESSO!")
+                    return
+            else:
+                print("PRODUTO NÃO ENCONTRADO!")
+        except Exception as e:
+            print("ERRO AO ALTERAR QUANTIDADE DO PRODUTO!")
+    
+    def alterar_cliente(self, pedido):
+        try:
+            pedido.imprimir_nota()
+            novo_cliente = input("DIGITE O NOME DO NOVO CLIENTE: ").upper()
+            pedido._cliente = novo_cliente
+            pedido.imprimir_nota()
+            print("CLIENTE ALTERADO COM SUCESSO!")
+        except Exception as e:
+            print("ERRO AO ALTERAR CLIENTE DO PEDIDO!")
 
     def registrar_venda(self):
         try:
             nome_cliente = input("DIGITE O NOME DO CLIENTE: ").upper()
-            pedido = Pedido(nome_cliente)
+            id_pedido = self.sorteia_id_não_repetido()
+            pedido = Pedido(nome_cliente, id_pedido)
+            
 
             while True:
                 menu_venda()
                 try:
                     op3 = int(input("DIGITE A OPÇÃO DESEJADA: "))
                 except ValueError:
-                    print("Opção inválida! Por favor, insira um número.")
+                    print("OPÇÃO INVAlIDA! TENTE NOVAMENTE.")
                     continue
 
-                if op3 == 0:
+                if op3 == 8 or op3 == 0:
                     break
                 elif op3 in [1, 2, 3, 4, 5, 6, 7]:
                     tipo_produto = {1: 'PASTEL', 2: 'BEBIDA', 3: 'AÇAI', 4: 'SORVETE', 5: 'CUZCUZ', 6: 'MASSA', 7:'PETISCO'}[op3]
@@ -274,8 +403,9 @@ class Caixa:
                     if tipo_produto == "CUZCUZ":
                         desc = []
 
+                        aux = 0
                         print("\nBASES")
-                        for i in range(3):
+                        while True:
                             print(f"0 - CANCELAR")
                             for base in self._produtos[tipo_produto]['BASES']:
                                 print(f"{cont} - {base}")
@@ -283,16 +413,21 @@ class Caixa:
                             try:
                                 op4 = int(input(f"DIGITE O NÚMERO DO DESEJADO: ")) - 1
                             except ValueError:
-                                print("Opção inválida! Por favor, insira um número.")
+                                print("OPÇÃO INVAlIDA! TENTE NOVAMENTE.")
+                                cont=1
                                 continue
 
                             if op4 == -1:
                                 break
                             if 0 <= op4 < len(self._produtos[tipo_produto]['BASES']):
                                 desc.append(self._produtos[tipo_produto]['BASES'][op4])
+                                aux += 1
                             else:
                                 print("OPÇÃO INVÁLIDA. TENTE NOVAMENTE.")
                             cont = 1
+                            
+                            if aux == 3:
+                                break
 
                         print("\nACOMPANHAMENTOS")
                         while True:
@@ -303,7 +438,8 @@ class Caixa:
                             try:
                                 op4 = int(input(f"DIGITE O NÚMERO DO DESEJADO: ")) - 1
                             except ValueError:
-                                print("Opção inválida! Por favor, insira um número.")
+                                print("OPÇÃO INVAlIDA! TENTE NOVAMENTE.")
+                                cont=1
                                 continue
 
                             if op4 == -1:
@@ -315,27 +451,42 @@ class Caixa:
                             cont = 1
                             if op4 == -1:
                                 break
+                        cont = 1
 
-                        print("\nQUEIJOS")
-                        for queijo in self._produtos[tipo_produto]['QUEIJOS']:
-                            print(f"{cont} - {queijo}")
-                            cont += 1
-                        try:
-                            op4 = int(input(f"DIGITE O NÚMERO DO DESEJADO: ")) - 1
-                        except ValueError:
-                            print("Opção inválida! Por favor, insira um número.")
-                            continue
+                        aux = 0
+                        while True:
+                            print("\nQUEIJOS")
+                            print(f"0 - CANCELAR")
+                            for queijo in self._produtos[tipo_produto]['QUEIJOS']:
+                                print(f"{cont} - {queijo}")
+                                cont += 1
+                            try:
+                                op4 = int(input(f"DIGITE O NÚMERO DO DESEJADO: ")) - 1
+                            except ValueError:
+                                print("OPÇÃO INVAlIDA! TENTE NOVAMENTE.")
+                                cont=1
+                                continue
 
-                        if 0 <= op4 < len(self._produtos[tipo_produto]['QUEIJOS']):
-                            desc.append(self._produtos[tipo_produto]['QUEIJOS'][op4])
+                            if op4 == -1:
+                                break
+
+                            if 0 <= op4 < len(self._produtos[tipo_produto]['QUEIJOS']):
+                                desc.append(self._produtos[tipo_produto]['QUEIJOS'][op4])
+                                aux += 1
+                            
+                            else:
+                                print("OPÇÃO INVÁLIDA. TENTE NOVAMENTE.")
+                            
+                            if aux == 1:
+                                break
+                            
 
                         desc = " ".join(desc)
                         print(desc)
                         c = Cuzcuz(desc, 10)
-                        try:
-                            quantidade = int(input("DIGITE A QUANTIDADE DESEJADA: "))
-                        except ValueError:
-                            print("Quantidade inválida! Por favor, insira um número.")
+                        quantidade = int(input("DIGITE A QUANTIDADE DESEJADA: "))
+                        if quantidade <= 0:
+                            print("QUANTIDADE INVÁLIDA. TENTE NOVAMENTE.")
                             continue
 
                         pedido.adicionar_produto(c, quantidade, tipo_produto)
@@ -343,21 +494,35 @@ class Caixa:
                     elif tipo_produto == "MASSA":
                         desc = []
 
-                        print("\nMOLHOS")
-                        for molho in self._produtos[tipo_produto]['MOLHOS']:
-                            print(f"{cont} - {molho}")
-                            cont += 1
-                        try:
-                            op4 = int(input(f"DIGITE O NÚMERO DO DESEJADO: ")) - 1
-                        except ValueError:
-                            print("Opção inválida! Por favor, insira um número.")
-                            continue
+                        aux = 0
+                        while True:
+                            print("\nMOLHOS")
+                            print(f"0 - CANCELAR")
+                            for molho in self._produtos[tipo_produto]['MOLHOS']:
+                                print(f"{cont} - {molho}")
+                                cont += 1
+                            try:
+                                op4 = int(input(f"DIGITE O NÚMERO DO DESEJADO: ")) - 1
+                            except ValueError:
+                                print("OPÇÃO INVAlIDA! TENTE NOVAMENTE.")
+                                cont=1
+                                continue
 
-                        if 0 <= op4 < len(self._produtos[tipo_produto]['MOLHOS']):
-                            desc.append(self._produtos[tipo_produto]['MOLHOS'][op4])
+                            if op4 == -1:
+                                break
 
+                            if 0 <= op4 < len(self._produtos[tipo_produto]['MOLHOS']):
+                                desc.append(self._produtos[tipo_produto]['MOLHOS'][op4])
+                                aux += 1
+                            else:
+                                print("OPÇÃO INVÁLIDA. TENTE NOVAMENTE.")
+                            cont = 1
+                            if aux == 1:
+                                break
+
+                        aux = 0
                         print("\nBASES")
-                        for i in range(3):
+                        while True:
                             print(f"0 - CANCELAR")
                             for base in self._produtos[tipo_produto]['BASES']:
                                 print(f"{cont} - {base}")
@@ -365,16 +530,22 @@ class Caixa:
                             try:
                                 op4 = int(input(f"DIGITE O NÚMERO DO DESEJADO: ")) - 1
                             except ValueError:
-                                print("Opção inválida! Por favor, insira um número.")
+                                print("OPÇÃO INVAlIDA! TENTE NOVAMENTE.")
+                                cont=1
                                 continue
 
                             if op4 == -1:
                                 break
                             if 0 <= op4 < len(self._produtos[tipo_produto]['BASES']):
                                 desc.append(self._produtos[tipo_produto]['BASES'][op4])
+                                aux += 1
                             else:
                                 print("OPÇÃO INVÁLIDA. TENTE NOVAMENTE.")
                             cont = 1
+                            
+                            if aux == 3:
+                                break
+                        cont = 1
 
                         print("\nACOMPANHAMENTOS")
                         while True:
@@ -385,7 +556,8 @@ class Caixa:
                             try:
                                 op4 = int(input(f"DIGITE O NÚMERO DO DESEJADO: ")) - 1
                             except ValueError:
-                                print("Opção inválida! Por favor, insira um número.")
+                                print("OPÇÃO INVAlIDA! TENTE NOVAMENTE.")
+                                cont=1
                                 continue
 
                             if op4 == -1:
@@ -397,29 +569,41 @@ class Caixa:
                             cont = 1
                             if op4 == -1:
                                 break
+                        cont = 1
 
-                        print("\nQUEIJOS")
-                        for queijo in self._produtos[tipo_produto]['QUEIJOS']:
-                            print(f"{cont} - {queijo}")
-                            cont += 1
-                        try:
-                            op4 = int(input(f"DIGITE O NÚMERO DO DESEJADO: ")) - 1
-                        except ValueError:
-                            print("Opção inválida! Por favor, insira um número.")
-                            continue
+                        aux = 0
+                        while True:
+                            print("\nQUEIJOS")
+                            print(f"0 - CANCELAR")
+                            for queijo in self._produtos[tipo_produto]['QUEIJOS']:
+                                print(f"{cont} - {queijo}")
+                                cont += 1
+                            try:
+                                op4 = int(input(f"DIGITE O NÚMERO DO DESEJADO: ")) - 1
+                            except ValueError:
+                                print("OPÇÃO INVAlIDA! TENTE NOVAMENTE.")
+                                cont=1
+                                continue
 
-                        if 0 <= op4 < len(self._produtos[tipo_produto]['QUEIJOS']):
-                            desc.append(self._produtos[tipo_produto]['QUEIJOS'][op4])
+                            if op4 == -1:
+                                break
 
+                            if 0 <= op4 < len(self._produtos[tipo_produto]['QUEIJOS']):
+                                desc.append(self._produtos[tipo_produto]['QUEIJOS'][op4])
+                                aux += 1
+                            
+                            else:
+                                print("OPÇÃO INVÁLIDA. TENTE NOVAMENTE.")
+                            
+                            if aux == 1:
+                                break
                         desc = " ".join(desc)
                         print(desc)
                         m = Massa(desc, 18)
-                        try:
-                            quantidade = int(input("DIGITE A QUANTIDADE DESEJADA: "))
-                        except ValueError:
-                            print("Quantidade inválida! Por favor, insira um número.")
+                        quantidade = int(input("DIGITE A QUANTIDADE DESEJADA: "))
+                        if quantidade <= 0:
+                            print("QUANTIDADE INVÁLIDA. TENTE NOVAMENTE.")
                             continue
-
                         pedido.adicionar_produto(m, quantidade, tipo_produto)
 
                     else:
@@ -427,42 +611,52 @@ class Caixa:
                             print(f"SEM {tipo_produto} DISPONÍVEIS NO MOMENTO")
                             continue
                         for produto in self._produtos[tipo_produto]:
-                            print(f"{cont} - {produto._nome} - {produto._preco} R$")
+                            print(f"{cont} - {produto._nome} - {produto._preco:.2f} R$")
                             cont += 1
                         try:
                             op4 = int(input(f"DIGITE O NÚMERO DO {tipo_produto} DESEJADO: ")) - 1
                         except ValueError:
-                            print("Opção inválida! Por favor, insira um número.")
+                            print("OPÇÃO INVAlIDA! TENTE NOVAMENTE.")
                             continue
 
                         if 0 <= op4 < len(self._produtos[tipo_produto]):
-                            try:
-                                quantidade = int(input("DIGITE A QUANTIDADE DESEJADA: "))
-                            except ValueError:
-                                print("Quantidade inválida! Por favor, insira um número.")
+                              
+                            quantidade = int(input("DIGITE A QUANTIDADE DESEJADA: "))
+                            if quantidade <= 0:
+                                print("QUANTIDADE INVÁLIDA. TENTE NOVAMENTE.")
                                 continue
 
                             pedido.adicionar_produto(self._produtos[tipo_produto][op4], quantidade, tipo_produto)
                         else:
                             print("OPÇÃO INVÁLIDA. TENTE NOVAMENTE.")
-            pedido.imprimir_nota()
-            confirmar = input("DESEJA REALIZAR A VENDA? (S/N): ").upper()
-            if confirmar == 'S':
-                self._pedidos.append(pedido)
-                print("VENDA REALIZADA COM SUCESSO!")
-            else:
-                print("VENDA CANCELADA!")
+                            continue   
+                
+            if op3 == 8 :
+                if not pedido._produtos:
+                    print("PEDIDO VAZIO! VENDA CANCELADA!")
+                else:
+                    pedido.imprimir_nota()
+                    confirmar = input("DESEJA REALIZAR A VENDA? (S/N): ").upper()
+                    if confirmar == 'S':
+                        self._pedidos.append(pedido)
+                        print("VENDA REALIZADA COM SUCESSO!")
+                    else:
+                        print("VENDA CANCELADA!")
         except Exception as e:
             print(f"Erro ao registrar venda: {e}")
 
     def historico_completo(self):
         try:
+            if not self._pedidos:
+                print("SEM VENDAS REGISTRADAS!")
+                return
             for pedido in self._pedidos:
                 pedido.imprimir_nota()
         except Exception as e:
             print(f"Erro ao imprimir histórico completo: {e}")
 
     def imprimir_cardapio(self):
+
         try:
             print("\n╔═══════════════════════════════════════╗")
             print("║               CARDÁPIO                ║")
@@ -480,14 +674,20 @@ class Caixa:
         except Exception as e:
             print(f"Erro ao imprimir cardápio: {e}")
 
+    def sorteia_id_não_repetido(self):
+        id = random.randint(1, 10000)
+        while id in [pedido._id_pedido for pedido in self._pedidos]:
+            id = random.randint(1, 10000)
+        return id
+        
 def main():
     try:
         caixa = Caixa()
         ac = Acai(59, "AÇAI")
         sv = Sorvete(45, "SORVETE")
-        misto = Pastel("MISTO", 10)
+        misto = Pastel("MISTO", 10.0032582739842)
         coca = Bebidas("COCA 350ML", 5)
-        porcao = Petisco("PORÇÃO DE BATATA SIMPLES", 15)
+        porcao = Petisco("BATATA", 15)
         caixa.adicionar_produto(ac)
         caixa.adicionar_produto(sv)
         caixa.adicionar_produto(misto)
@@ -499,7 +699,7 @@ def main():
             try:
                 op = int(input("DIGITE A OPÇÃO DESEJADA: "))
             except ValueError:
-                print("Opção inválida! Por favor, insira um número.")
+                print("OPÇÃO INVAlIDA! TENTE NOVAMENTE.")
                 continue
 
             match op:
@@ -508,10 +708,13 @@ def main():
                     try:
                         op2 = int(input("DIGITE A OPÇÃO DESEJADA: "))
                     except ValueError:
-                        print("Opção inválida! Por favor, insira um número.")
+                        print("OPÇÃO INVAlIDA! TENTE NOVAMENTE.")
                         continue
 
                     match op2:
+
+                        case 0:
+                            continue
                         case 1:
                             nome = input("DIGITE O NOME DO PASTEL: ").upper()
                             try:
@@ -532,6 +735,18 @@ def main():
 
                             bebida = Bebidas(nome, preco)
                             caixa.adicionar_produto(bebida)
+                        case 3:
+                            try:
+                                nome = input("DIGITE O NOME DO PETISCO: ").upper()
+                                preco = float(input("DIGITE O PREÇO DO PETISCO: "))
+                            except ValueError:
+                                print("Entrada inválida! Por favor, insira um valor numérico para o preço.")
+                                continue
+
+                            petisco = Petisco(nome, preco)
+                            caixa.adicionar_produto(petisco)
+
+                        
                 case 2:
                     nome_produto = input("DIGITE O NOME DO PRODUTO QUE DESEJA EDITAR: ").upper()
                     caixa.editar_produto(nome_produto)
@@ -541,20 +756,59 @@ def main():
                 case 4:
                     caixa.registrar_venda()
                 case 5:
+                    if not caixa._pedidos:
+                        print("SEM VENDAS REGISTRADAS!")
+                        continue
+                    try:
+                        id_pedido = int(input("DIGITE O ID DO PEDIDO: "))
+                        for pedido in caixa._pedidos:
+                            if pedido._id_pedido == id_pedido:
+                                while True:
+                                    op6 = 11
+                                    menu_editar_pedido()
+                                    try:
+                                        op6 = int(input("DIGITE A OPÇÃO DESEJADA: "))
+                                        match op6:
+                                            case 0:
+                                                break
+                                            case 1:
+                                                caixa.decrementar_pedido(pedido)
+                                            case 2:
+                                                caixa.alterar_quantidade(pedido)
+                                            case 3:
+                                                caixa.alterar_cliente(pedido)
+                                            case 4:
+                                                caixa.cancelar_pedido(pedido)
+                                    except ValueError:
+                                        print("OPÇÃO INVAlIDA! TENTE NOVAMENTE.")
+                                        continue
+                            else:
+                                print("ID NÃO ENCONTRADO!")
+                                continue
+                    except ValueError:
+                        print("ID INVÁLIDO! TENTE NOVAMENTE.")
+                        continue
+                case 6:
                     menu_historico()
                     try:
                         op5 = int(input("DIGITE A OPÇÃO DESEJADA: "))
                     except ValueError:
-                        print("Opção inválida! Por favor, insira um número.")
+                        print("OPÇÃO INVAlIDA! TENTE NOVAMENTE.")
                         continue
 
                     match op5:
                         case 1:
+                            if not caixa._pedidos:
+                                print("SEM VENDAS REGISTRADAS!")
+                                continue
                             nome_cliente = input("DIGITE O NOME DO CLIENTE: ").upper()
                             for pedido in caixa._pedidos:
                                 if pedido._cliente == nome_cliente:
                                     pedido.imprimir_nota()
                         case 2:
+                            if not caixa._pedidos:
+                                print("SEM VENDAS REGISTRADAS!")
+                                continue
                             tot = 0
                             try:
                                 data_inicial = datetime.strptime(input("DIGITE A DATA INICIAL (DD/MM/AAAA): "), "%d/%m/%Y").toordinal()
@@ -574,6 +828,9 @@ def main():
                         case 3:
                             caixa.historico_completo()
                         case 4:
+                            if not caixa._pedidos:
+                                print("SEM VENDAS REGISTRADAS!")
+                                continue
                             try:
                                 id_pedido = int(input("DIGITE O ID DO PEDIDO: "))
                             except ValueError:
@@ -583,7 +840,7 @@ def main():
                             for pedido in caixa._pedidos:
                                 if pedido._id_pedido == id_pedido:
                                     pedido.imprimir_nota()
-                case 6:
+                case 7:
                     caixa.imprimir_cardapio()
                 case 0:
                     print("SAINDO...")
