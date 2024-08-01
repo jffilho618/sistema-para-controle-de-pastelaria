@@ -454,9 +454,10 @@ class Caixa:
                             if 0 <= op4 < len(self._produtos[tipo_produto]['BASES']):
                                 desc.append(self._produtos[tipo_produto]['BASES'][op4])
                                 aux += 1
+                                cont = 1
                             else:
                                 print("OPÇÃO INVÁLIDA. TENTE NOVAMENTE.")
-                            cont = 1
+                                cont = 1
                             
                             if aux == 3:
                                 break
@@ -478,8 +479,10 @@ class Caixa:
                                 break
                             if 0 <= op4 < len(self._produtos[tipo_produto]['ACOMPANHAMENTOS']):
                                 desc.append(self._produtos[tipo_produto]['ACOMPANHAMENTOS'][op4])
+                                cont = 1
                             else:
                                 print("OPÇÃO INVÁLIDA. TENTE NOVAMENTE.")
+                                cont = 1
                             cont = 1
                             if op4 == -1:
                                 break
@@ -496,7 +499,6 @@ class Caixa:
                                 op4 = int(input(f"DIGITE O NÚMERO DO DESEJADO: ")) - 1
                             except ValueError:
                                 print("OPÇÃO INVAlIDA! TENTE NOVAMENTE.")
-                                cont=1
                                 continue
 
                             if op4 == -1:
@@ -505,9 +507,12 @@ class Caixa:
                             if 0 <= op4 < len(self._produtos[tipo_produto]['QUEIJOS']):
                                 desc.append(self._produtos[tipo_produto]['QUEIJOS'][op4])
                                 aux += 1
+                                cont = 1
                             
                             else:
                                 print("OPÇÃO INVÁLIDA. TENTE NOVAMENTE.")
+                                cont = 1
+                                
                             
                             if aux == 1:
                                 break
@@ -546,6 +551,7 @@ class Caixa:
                             if 0 <= op4 < len(self._produtos[tipo_produto]['MOLHOS']):
                                 desc.append(self._produtos[tipo_produto]['MOLHOS'][op4])
                                 aux += 1
+                                cont = 1
                             else:
                                 print("OPÇÃO INVÁLIDA. TENTE NOVAMENTE.")
                             cont = 1
@@ -571,6 +577,7 @@ class Caixa:
                             if 0 <= op4 < len(self._produtos[tipo_produto]['BASES']):
                                 desc.append(self._produtos[tipo_produto]['BASES'][op4])
                                 aux += 1
+                                cont = 1
                             else:
                                 print("OPÇÃO INVÁLIDA. TENTE NOVAMENTE.")
                             cont = 1
@@ -596,9 +603,10 @@ class Caixa:
                                 break
                             if 0 <= op4 < len(self._produtos[tipo_produto]['ACOMPANHAMENTOS']):
                                 desc.append(self._produtos[tipo_produto]['ACOMPANHAMENTOS'][op4])
+                                cont = 1
                             else:
                                 print("OPÇÃO INVÁLIDA. TENTE NOVAMENTE.")
-                            cont = 1
+                                cont = 1
                             if op4 == -1:
                                 break
                         cont = 1
@@ -623,9 +631,11 @@ class Caixa:
                             if 0 <= op4 < len(self._produtos[tipo_produto]['QUEIJOS']):
                                 desc.append(self._produtos[tipo_produto]['QUEIJOS'][op4])
                                 aux += 1
+                                cont = 1
                             
                             else:
                                 print("OPÇÃO INVÁLIDA. TENTE NOVAMENTE.")
+                                cont = 1
                             
                             if aux == 1:
                                 break
