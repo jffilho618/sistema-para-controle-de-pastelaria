@@ -2,40 +2,59 @@ import abc
 import random
 from datetime import datetime, time
 
-# Interface de Autenticacao
+
+class Funcionario():
+    def __init__(self, usuario, senha):
+        self._usuario = usuario
+        self._senha = senha
+        
 class Autenticacao(abc.ABC):
     @abc.abstractmethod
     def login(self, usuario, senha):
         pass
 
-# Implementacao da Interface de Autenticacao
 class AutenticacaoSimples:
     def __init__(self):
         self.usuario_padrao = "admin"
         self.senha_padrao = "admin"
 
-    def login(self, usuario, senha):
-        if usuario == self.usuario_padrao and senha == self.senha_padrao:
+    def login(self, funcionario: Funcionario):
+        if funcionario._usuario == self.usuario_padrao and funcionario._senha == self.senha_padrao:
             return True
         else:
             return False
 
-# Registrando a classe AutenticacaoSimples como uma implementação da interface Autenticacao
 Autenticacao.register(AutenticacaoSimples)
 
 def obter_credenciais():
     usuario = input("Digite o usuário: ")
     senha = input("Digite a senha: ")
-    return usuario, senha
+    return Funcionario(usuario, senha)
 
-def autenticar_usuario(autenticacao):
-    usuario, senha = obter_credenciais()
-    if autenticacao.login(usuario, senha):
+def autenticar_usuario(autenticacao: Autenticacao):
+    funcionario = obter_credenciais()
+    if autenticacao.login(funcionario):
         print("Login bem-sucedido!")
         return True
     else:
         print("Usuário ou senha incorretos. Tente novamente.")
         return False
+    
+def autenticacao():
+    autenticacao = AutenticacaoSimples()
+    tentativas = 3
+
+    while tentativas > 0:
+        if autenticar_usuario(autenticacao):
+            menu_historico()
+            break
+        else:
+            tentativas -= 1
+            print(f"Tentativas restantes: {tentativas}")
+
+        if tentativas == 0:
+            print("Número máximo de tentativas alcançado!")
+            continue
 
 def menu_principal():
     print("╔══════════════════════════════════════╗")
@@ -84,7 +103,6 @@ def menu_venda():
     print("║ [6] MASSA                            ║")
     print("║ [7] PETISCO                          ║")
     print("║ [8] FINALIZAR PEDIDO                 ║")
-    print("║ [9] CANCELAR PEDIDO                  ║")
     print("║ [0] MENU ANTERIOR                    ║")
     print("╚══════════════════════════════════════╝\n")
 
@@ -454,12 +472,15 @@ class Caixa:
                             if 0 <= op4 < len(self._produtos[tipo_produto]['BASES']):
                                 desc.append(self._produtos[tipo_produto]['BASES'][op4])
                                 aux += 1
+                                cont = 1
                             else:
                                 print("OPÇÃO INVÁLIDA. TENTE NOVAMENTE.")
-                            cont = 1
+                                cont = 1
                             
                             if aux == 3:
                                 break
+                        
+                        cont = 1
 
                         print("\nACOMPANHAMENTOS")
                         while True:
@@ -478,8 +499,10 @@ class Caixa:
                                 break
                             if 0 <= op4 < len(self._produtos[tipo_produto]['ACOMPANHAMENTOS']):
                                 desc.append(self._produtos[tipo_produto]['ACOMPANHAMENTOS'][op4])
+                                cont = 1
                             else:
                                 print("OPÇÃO INVÁLIDA. TENTE NOVAMENTE.")
+                                cont = 1
                             cont = 1
                             if op4 == -1:
                                 break
@@ -496,7 +519,6 @@ class Caixa:
                                 op4 = int(input(f"DIGITE O NÚMERO DO DESEJADO: ")) - 1
                             except ValueError:
                                 print("OPÇÃO INVAlIDA! TENTE NOVAMENTE.")
-                                cont=1
                                 continue
 
                             if op4 == -1:
@@ -505,9 +527,12 @@ class Caixa:
                             if 0 <= op4 < len(self._produtos[tipo_produto]['QUEIJOS']):
                                 desc.append(self._produtos[tipo_produto]['QUEIJOS'][op4])
                                 aux += 1
+                                cont = 1
                             
                             else:
                                 print("OPÇÃO INVÁLIDA. TENTE NOVAMENTE.")
+                                cont = 1
+                                
                             
                             if aux == 1:
                                 break
@@ -525,7 +550,7 @@ class Caixa:
 
                     elif tipo_produto == "MASSA":
                         desc = []
-
+                        cont = 1
                         aux = 0
                         while True:
                             print("\nMOLHOS")
@@ -546,6 +571,7 @@ class Caixa:
                             if 0 <= op4 < len(self._produtos[tipo_produto]['MOLHOS']):
                                 desc.append(self._produtos[tipo_produto]['MOLHOS'][op4])
                                 aux += 1
+                                cont = 1
                             else:
                                 print("OPÇÃO INVÁLIDA. TENTE NOVAMENTE.")
                             cont = 1
@@ -553,6 +579,7 @@ class Caixa:
                                 break
 
                         aux = 0
+                        cont = 1
                         print("\nBASES")
                         while True:
                             print(f"0 - CANCELAR")
@@ -571,6 +598,7 @@ class Caixa:
                             if 0 <= op4 < len(self._produtos[tipo_produto]['BASES']):
                                 desc.append(self._produtos[tipo_produto]['BASES'][op4])
                                 aux += 1
+                                cont = 1
                             else:
                                 print("OPÇÃO INVÁLIDA. TENTE NOVAMENTE.")
                             cont = 1
@@ -596,9 +624,10 @@ class Caixa:
                                 break
                             if 0 <= op4 < len(self._produtos[tipo_produto]['ACOMPANHAMENTOS']):
                                 desc.append(self._produtos[tipo_produto]['ACOMPANHAMENTOS'][op4])
+                                cont = 1
                             else:
                                 print("OPÇÃO INVÁLIDA. TENTE NOVAMENTE.")
-                            cont = 1
+                                cont = 1
                             if op4 == -1:
                                 break
                         cont = 1
@@ -623,9 +652,11 @@ class Caixa:
                             if 0 <= op4 < len(self._produtos[tipo_produto]['QUEIJOS']):
                                 desc.append(self._produtos[tipo_produto]['QUEIJOS'][op4])
                                 aux += 1
+                                cont = 1
                             
                             else:
                                 print("OPÇÃO INVÁLIDA. TENTE NOVAMENTE.")
+                                cont = 1
                             
                             if aux == 1:
                                 break
@@ -661,7 +692,10 @@ class Caixa:
                             pedido.adicionar_produto(self._produtos[tipo_produto][op4], quantidade, tipo_produto)
                         else:
                             print("OPÇÃO INVÁLIDA. TENTE NOVAMENTE.")
-                            continue   
+                            continue
+                else:
+                    print("OPÇÃO INVÁLIDA! TENTE NOVAMENTE.")
+                    continue       
                 
             if op3 == 8 :
                 if not pedido._produtos:

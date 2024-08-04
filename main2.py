@@ -5,14 +5,76 @@ def main():
         caixa = Caixa()
         ac = Acai(59, "AÇAI")
         sv = Sorvete(45, "SORVETE")
-        misto = Pastel("MISTO", 10.0032582739842)
+        misto = Pastel("MISTO", 10.0)
         coca = Bebidas("COCA 350ML", 5)
         porcao = Petisco("BATATA", 15)
+        carne = Pastel("CARNE", 10)
+        frango = Pastel("FRANGO", 10)
+        Queijo_presunto = Pastel("QUEIJO E PRESUNTO", 10)
+        Queijo_coalho_ou_mussarela = Pastel("QUEIJO COALHO OU MUSSARELA", 10)
+        carne_queijo_milho = Pastel("CARNE, QUEIJO E MILHO", 10)
+        frango_catupiry_milho = Pastel("FRANGO, CATUPIRY E MILHO", 10)
+        queijo_presunto_bacon = Pastel("QUEIJO, PRESUNTO E BACON", 10)
+        frango_catupiry = Pastel("FRANGO E CATUPIRY", 10)
+        frango_cremoso = Pastel("FRANGO CREMOSO", 12)
+        pizza_frango = Pastel("PIZZA DE FRANGO", 12)
+        hot_dog = Pastel("HOT DOG", 12)
+        Mexicano_Carne = Pastel("MEXICANO DE CARNE", 12)
+        Mexicano_frango = Pastel("MEXICANO DE FRANGO", 12)
+        Mexicabo_carne_geleia = Pastel("MEXICANO DE CARNE COM GELEIA", 12)
+        franbacon = Pastel("FRANBACON", 12)
+        xtudao = Pastel("XTUDÃO", 15)
+        Big_frango = Pastel("BIG FRANGO", 15)
+        Big_Vegetariano = Pastel("BIG VEGETARIANO", 15)
+        doce_leite = Pastel("DOCE DE LEITE", 6)
+        prestigio = Pastel("PRESTÍGIO", 6)
+        nutele = Pastel("NUTELLA", 6)
+        Romeu_Julieta = Pastel("ROMEU E JULIETA", 6)
+        guarana = Bebidas("GUARANÁ 350ML", 5)
+        fanta = Bebidas("FANTA 350ML", 5)
+        coca_2l = Bebidas("COCA 2L", 12)
+        coca_zero = Bebidas("COCA ZERO 350ML", 5)
+        coca_cola_1l = Bebidas("COCA COLA 1L", 8)
+        guarana_2l = Bebidas("GUARANÁ 2L", 12)
+        fanta_2l = Bebidas("FANTA 2L", 12)
+
+
+
+
         caixa.adicionar_produto(ac)
         caixa.adicionar_produto(sv)
         caixa.adicionar_produto(misto)
         caixa.adicionar_produto(coca)
         caixa.adicionar_produto(porcao)
+        caixa.adicionar_produto(carne)
+        caixa.adicionar_produto(frango)
+        caixa.adicionar_produto(Queijo_presunto)
+        caixa.adicionar_produto(Queijo_coalho_ou_mussarela)
+        caixa.adicionar_produto(carne_queijo_milho)
+        caixa.adicionar_produto(frango_catupiry_milho)
+        caixa.adicionar_produto(queijo_presunto_bacon)
+        caixa.adicionar_produto(frango_catupiry)
+        caixa.adicionar_produto(frango_cremoso)
+        caixa.adicionar_produto(pizza_frango)
+        caixa.adicionar_produto(hot_dog)
+        caixa.adicionar_produto(Mexicano_Carne)
+        caixa.adicionar_produto(Mexicano_frango)
+        caixa.adicionar_produto(Mexicabo_carne_geleia)
+        caixa.adicionar_produto(franbacon)
+        caixa.adicionar_produto(xtudao)
+        caixa.adicionar_produto(Big_frango)
+        caixa.adicionar_produto(Big_Vegetariano)
+        caixa.adicionar_produto(doce_leite)
+        caixa.adicionar_produto(prestigio)
+        caixa.adicionar_produto(nutele)
+        caixa.adicionar_produto(Romeu_Julieta)
+        caixa.adicionar_produto(guarana)
+        caixa.adicionar_produto(fanta)
+        caixa.adicionar_produto(coca_2l)
+        caixa.adicionar_produto(coca_zero)
+        caixa.adicionar_produto(coca_cola_1l)
+        caixa.adicionar_produto(guarana_2l)
+        caixa.adicionar_produto(fanta_2l)
         op = 11
         while op != 0:
             menu_principal()
@@ -111,7 +173,8 @@ def main():
                         print("ID INVÁLIDO! TENTE NOVAMENTE.")
                         continue
                 case 6:
-                    menu_historico()
+                    autenticacao()
+                    
                     try:
                         op5 = int(input("DIGITE A OPÇÃO DESEJADA: "))
                     except ValueError:
@@ -172,20 +235,7 @@ def main():
     except Exception as e:
         print(f"Erro ao executar o sistema: {e}")
 
-def main2():
-    autenticacao = AutenticacaoSimples()
-    tentativas = 3
 
-    while tentativas > 0:
-        if autenticar_usuario(autenticacao):
-            main()
-            break
-        else:
-            tentativas -= 1
-            print(f"Tentativas restantes: {tentativas}")
-
-    if tentativas == 0:
-        print("Número máximo de tentativas alcançado. Encerrando o programa.")
 
 if __name__ == "__main__":
-    main2()
+    main()
