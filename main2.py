@@ -5,7 +5,7 @@ def main():
         caixa = Caixa()
         ac = Acai(59, "AÇAI")
         sv = Sorvete(45, "SORVETE")
-        misto = Pastel("MISTO", 10.0032582739842)
+        misto = Pastel("MISTO", 10.0)
         coca = Bebidas("COCA 350ML", 5)
         porcao = Petisco("BATATA", 15)
         carne = Pastel("CARNE", 10)
@@ -173,7 +173,8 @@ def main():
                         print("ID INVÁLIDO! TENTE NOVAMENTE.")
                         continue
                 case 6:
-                    menu_historico()
+                    autenticacao()
+                    
                     try:
                         op5 = int(input("DIGITE A OPÇÃO DESEJADA: "))
                     except ValueError:
@@ -234,20 +235,7 @@ def main():
     except Exception as e:
         print(f"Erro ao executar o sistema: {e}")
 
-def main2():
-    autenticacao = AutenticacaoSimples()
-    tentativas = 3
 
-    while tentativas > 0:
-        if autenticar_usuario(autenticacao):
-            main()
-            break
-        else:
-            tentativas -= 1
-            print(f"Tentativas restantes: {tentativas}")
-
-    if tentativas == 0:
-        print("Número máximo de tentativas alcançado. Encerrando o programa.")
 
 if __name__ == "__main__":
-    main2()
+    main()
