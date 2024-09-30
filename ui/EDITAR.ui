@@ -273,23 +273,7 @@ border-color: rgb(0, 0, 0);</string>
       <string notr="true">background-color: rgb(255, 255, 255);</string>
      </property>
      <property name="placeholderText">
-      <string/>
-     </property>
-    </widget>
-    <widget class="QLabel" name="label_12">
-     <property name="geometry">
-      <rect>
-       <x>120</x>
-       <y>135</y>
-       <width>251</width>
-       <height>21</height>
-      </rect>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">background-color: rgb(255, 255, 255);</string>
-     </property>
-     <property name="text">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-style:italic; color:#949494;&quot;&gt;DIGITE O NOME DO PRODUTO QUE DESEJA EDITAR&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>DIGITE O NOME DO PRODUTO QUE DESEJA EDITAR</string>
      </property>
     </widget>
     <widget class="QScrollBar" name="verticalScrollBar">
@@ -325,8 +309,6 @@ background-color: rgb(255, 255, 255);</string>
    </widget>
   </widget>
  </widget>
- <resources>
-  <include location="IMG.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>
