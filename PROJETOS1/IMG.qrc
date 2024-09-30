@@ -1,0 +1,26 @@
+<RCC>
+  <qresource prefix="IMG">
+    <file>search.png</file>
+    <file>square_14034319.png</file>
+    <file>check_15526414.png</file>
+    <file>21797173-seta-esquerda-icone-isolado-em-branco-fundo-vetor (1).jpg</file>
+    <file>avatar_15484536.png</file>
+    <file>user.png</file>
+    <file>report.png</file>
+    <file>fast-food.png</file>
+    <file>move_10023584.png</file>
+    <file>eye_6063720.png</file>
+    <file>clock_15812547.png</file>
+    <file>clock_5370986.png</file>
+    <file>magnifier.png</file>
+    <file>correct_8638664.png</file>
+    <file>delete_6217704.png</file>
+    <file>add_6217245.png</file>
+    <file>resize_8637934.png</file>
+    <file>refresh_9546374.png</file>
+    <file>edit-button_5254025.png</file>
+    <file>trash_5311905.png</file>
+    <file>delete_399290.png</file>
+    <file>write.png</file>
+  </qresource>
+</RCC>
