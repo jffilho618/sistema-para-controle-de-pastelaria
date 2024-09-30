@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1889</width>
+    <width>1919</width>
     <height>980</height>
    </rect>
   </property>
@@ -19,20 +19,19 @@
   <widget class="QLabel" name="label">
    <property name="geometry">
     <rect>
-     <x>0</x>
+     <x>-30</x>
      <y>0</y>
-     <width>1981</width>
+     <width>1991</width>
      <height>141</height>
     </rect>
    </property>
    <property name="styleSheet">
-    <string notr="true">
-    background-color: rgb(14, 83, 132);
-    border-color: rgb(0, 0, 0);
+    <string notr="true"> background-color: rgb(14, 83, 132);
+ 
     </string>
    </property>
    <property name="text">
-    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:48pt; font-weight:600; color:#ffffff;&quot;&gt; D'GUSTA &lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:48pt; font-weight:600; color:#ffffff;&quot;&gt;D'GUSTA&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
   </widget>
   <widget class="QFrame" name="frame_2">
@@ -156,7 +155,7 @@ image: url(:/IMG/report.png);</string>
   </widget>
  </widget>
  <resources>
-  <include location="PROJETOS1/IMG.qrc"/>
+  <include location="../PROJETOS1/IMG.qrc"/>
  </resources>
  <connections/>
 </ui>
