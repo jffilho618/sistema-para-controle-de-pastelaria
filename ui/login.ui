@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>758</width>
-    <height>510</height>
+    <width>1906</width>
+    <height>961</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -21,8 +21,8 @@
     <rect>
      <x>-10</x>
      <y>0</y>
-     <width>771</width>
-     <height>511</height>
+     <width>1921</width>
+     <height>981</height>
     </rect>
    </property>
    <property name="styleSheet">
@@ -38,10 +38,10 @@ border-color: rgb(0, 0, 0);</string>
    <widget class="QLabel" name="label">
     <property name="geometry">
      <rect>
-      <x>320</x>
-      <y>110</y>
-      <width>161</width>
-      <height>81</height>
+      <x>860</x>
+      <y>240</y>
+      <width>171</width>
+      <height>161</height>
      </rect>
     </property>
     <property name="styleSheet">
@@ -54,70 +54,53 @@ border-color: rgb(0, 0, 0);</string>
    <widget class="QLineEdit" name="lineEdit">
     <property name="geometry">
      <rect>
-      <x>340</x>
-      <y>239</y>
-      <width>121</width>
-      <height>21</height>
+      <x>850</x>
+      <y>429</y>
+      <width>191</width>
+      <height>31</height>
      </rect>
     </property>
     <property name="styleSheet">
      <string notr="true">background-color: rgb(255, 255, 255);
 </string>
     </property>
+    <property name="frame">
+     <bool>true</bool>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+    <property name="placeholderText">
+     <string>LOGIN</string>
+    </property>
    </widget>
    <widget class="QLineEdit" name="lineEdit_2">
     <property name="geometry">
      <rect>
-      <x>340</x>
-      <y>270</y>
-      <width>121</width>
-      <height>21</height>
+      <x>850</x>
+      <y>480</y>
+      <width>191</width>
+      <height>31</height>
      </rect>
     </property>
     <property name="styleSheet">
      <string notr="true">background-color: rgb(255, 255, 255);
 border-color: rgb(0, 0, 0);</string>
     </property>
-   </widget>
-   <widget class="QLabel" name="label_3">
-    <property name="geometry">
-     <rect>
-      <x>380</x>
-      <y>270</y>
-      <width>41</width>
-      <height>20</height>
-     </rect>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
     </property>
-    <property name="styleSheet">
-     <string notr="true">background-color: rgb(255, 255, 255);</string>
-    </property>
-    <property name="text">
-     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:7pt; font-style:italic; color:#828282;&quot;&gt;SENHA&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_4">
-    <property name="geometry">
-     <rect>
-      <x>380</x>
-      <y>240</y>
-      <width>41</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">background-color: rgb(255, 255, 255);</string>
-    </property>
-    <property name="text">
-     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-style:italic; color:#949494;&quot;&gt;LOGIN&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    <property name="placeholderText">
+     <string>SENHA</string>
     </property>
    </widget>
    <widget class="QPushButton" name="pushButton">
     <property name="geometry">
      <rect>
-      <x>340</x>
-      <y>310</y>
-      <width>121</width>
-      <height>23</height>
+      <x>850</x>
+      <y>532</y>
+      <width>191</width>
+      <height>41</height>
      </rect>
     </property>
     <property name="toolTip">
@@ -136,9 +119,9 @@ border-color: rgb(0, 0, 0);</string>
    <widget class="QLabel" name="label_5">
     <property name="geometry">
      <rect>
-      <x>370</x>
-      <y>310</y>
-      <width>61</width>
+      <x>910</x>
+      <y>540</y>
+      <width>71</width>
       <height>21</height>
      </rect>
     </property>
@@ -147,7 +130,7 @@ border-color: rgb(0, 0, 0);</string>
 background-color: rgb(0, 191, 99);</string>
     </property>
     <property name="text">
-     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-weight:600; color:#ffffff;&quot;&gt;ENTRAR&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:12pt; font-weight:600; color:#ffffff;&quot;&gt;ENTRAR&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
    </widget>
    <widget class="QPushButton" name="pushButton_2">
@@ -169,7 +152,7 @@ background-color: rgb(0, 191, 99);</string>
   </widget>
  </widget>
  <resources>
-  <include location="IMG.qrc"/>
+  <include location="../PROJETOS1/IMG.qrc"/>
  </resources>
  <connections/>
 </ui>
