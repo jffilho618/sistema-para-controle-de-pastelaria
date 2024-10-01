@@ -178,28 +178,88 @@ class MainWindow(QtWidgets.QDialog):
             return True
         return False
 
+    def adicionar_produto1(self):
+        # Aqui você deve capturar os dados do produto a partir dos campos de entrada da tela de inserção
+        nome = self.inserir_window.lineEdit.text()
+        preco = float(self.inserir_window.lineEdit_2.text())  # Supondo que tenha um campo para preço
+        tipo = self.inserir_window.comboBox.currentText()  # Supondo que tenha um combo box para tipo de produto
+
+        # Crie uma instância do produto com os dados coletados
+        if tipo == "PASTEL":
+            produto = Pastel(nome, preco)
+        elif tipo == "BEBIDA":
+            produto = Bebidas(nome, preco)
+        elif tipo == "AÇAI":
+            produto = Acai(nome, preco)
+        elif tipo == "SORVETE":
+            produto = Sorvete(nome, preco)
+        elif tipo == "CUZCUZ":
+            produto = Cuzcuz(nome, preco)
+        elif tipo == "MASSA":
+            produto = Massa(nome, preco)
+        elif tipo == "PETISCO":
+            produto = Petisco(nome, preco)
+        else:
+            print("Tipo de produto inválido.")
+            return
+
+        # Chame o método adicionar_produto
+        self.caixa.adicionar_produto(produto)
+
+        # Feche a janela de inserção após adicionar
+        self.inserir_window.accept()
+
     def abrir_tela_editar(self):
-        # Função para abrir a janela de edição
-        self.editar_window = QtWidgets.QDialog()  # Cria uma instância da janela de edição
-        uic.loadUi('ui\\editar.ui', self.editar_window)  # Carrega a interface da janela de edição
+        self.editar_window = QtWidgets.QDialog()
+        uic.loadUi('ui\\editar.ui', self.editar_window)
 
-        # Conectar o campo de pesquisa à função de buscar e exibir os resultados
+        # Desconectar sinal se já estiver conectado
+        try:
+            self.editar_window.lineEdit.textChanged.disconnect(self.buscar_produto)
+        except TypeError:
+            pass  # Ignorar se não houver conexão
+
+        # Conectar o campo de pesquisa
         self.editar_window.lineEdit.textChanged.connect(self.buscar_produto)
-
-        # Conectar o evento de mudança de célula à função de atualização do produto
         self.editar_window.tableWidget.itemChanged.connect(self.atualizar_produto)
 
-        # Exibir as imagens dos botões de inserir, editar, remover e da caixa de pesquisa
+        # Conectar os botões de inserir e remover
+        self.editar_window.pushButton_7.clicked.connect(self.chamar_tela_insercao)
+        #self.editar_window.pushButton_5.clicked.connect(self.chamar_tela_remocao)
+
+        # Exibir as imagens
         self.exibir_imagem_inserir(self.editar_window)
         self.exibir_imagem_editar(self.editar_window)
         self.exibir_imagem_remover(self.editar_window)
         self.exibir_imagem_pesquisa(self.editar_window)
 
-        # Definir o ícone do botão de voltar na tela de edição
+        # Definir ícone do botão de voltar
         self.definir_imagem_voltar(self.editar_window)
 
-        # Exibe a janela de edição
         self.editar_window.exec_()
+
+    def chamar_tela_insercao(self):
+        print("Botão Inserir pressionado")  # Debugging
+        self.inserir_window = QtWidgets.QDialog()
+        uic.loadUi(r'ui\inserir.ui', self.inserir_window)
+
+        # Conectar o botão de adicionar
+        self.inserir_window.pushButton.clicked.connect(self.adicionar_produto1)
+
+        self.definir_imagem_voltar(self.inserir_window)
+        self.exibir_imagem_inserir(self.inserir_window)
+        self.exibir_imagem_editar(self.inserir_window)
+        self.exibir_imagem_remover(self.inserir_window)
+
+        self.inserir_window.exec_()
+
+
+    '''def chamar_tela_remocao(self):
+        # Lógica para abrir a tela de remoção
+        self.remover_window = QtWidgets.QDialog()
+        uic.loadUi('ui\\remover.ui', self.remover_window)  # Carrega a interface de remoção
+        # Conectar ações e exibir a tela
+        self.remover_window.exec_()'''
 
     def buscar_produto(self):
         # Captura o texto inserido no campo de pesquisa
@@ -207,43 +267,50 @@ class MainWindow(QtWidgets.QDialog):
 
         # Limpa o conteúdo atual da tabela
         self.editar_window.tableWidget.clearContents()
-        
-        # Remove todas as linhas atuais
         self.editar_window.tableWidget.setRowCount(0)
+
+        # Se o campo de pesquisa estiver vazio, não faz nada e retorna
+        if not texto_pesquisa:
+            print("Campo de pesquisa vazio. Tabela limpa.")
+            return
 
         # Variável para controlar o número de linhas a serem exibidas
         linha = 0
+        produtos_exibidos = set()  # Usar um conjunto para rastrear produtos exibidos
 
         # Percorre todos os produtos no caixa
         for tipo, conteudo in self.caixa._produtos.items():
             if isinstance(conteudo, list):  # Considera apenas categorias com listas de produtos
                 for produto in conteudo:
                     if produto._nome.lower().startswith(texto_pesquisa):
-                        # Insere uma nova linha na tabela
-                        self.editar_window.tableWidget.insertRow(linha)
+                        # Verifica se o produto já foi exibido
+                        if produto not in produtos_exibidos:
+                            # Insere uma nova linha na tabela
+                            self.editar_window.tableWidget.insertRow(linha)
 
-                        # Preenche as células com os dados do produto
-                        self.editar_window.tableWidget.setItem(linha, 0, QtWidgets.QTableWidgetItem(produto._nome))
-                        self.editar_window.tableWidget.setItem(linha, 1, QtWidgets.QTableWidgetItem(produto._unidade))
-                        self.editar_window.tableWidget.setItem(linha, 2, QtWidgets.QTableWidgetItem(f"{produto._preco:.2f}"))
+                            # Preenche as células com os dados do produto
+                            self.editar_window.tableWidget.setItem(linha, 0, QtWidgets.QTableWidgetItem(produto._nome))
+                            self.editar_window.tableWidget.setItem(linha, 1, QtWidgets.QTableWidgetItem(produto._unidade))
+                            self.editar_window.tableWidget.setItem(linha, 2, QtWidgets.QTableWidgetItem(f"{produto._preco:.2f}"))
 
-                        linha += 1
+                            produtos_exibidos.add(produto)  # Adiciona o produto ao conjunto
+                            linha += 1
 
         # Ajusta o tamanho das colunas
         self.editar_window.tableWidget.horizontalHeader().setStretchLastSection(True)
-        
+
         # Define as proporções das colunas
         self.editar_window.tableWidget.setColumnWidth(0, 200)  # Nome com largura maior
         self.editar_window.tableWidget.setColumnWidth(1, 100)  # Unidade
         self.editar_window.tableWidget.setColumnWidth(2, 100)  # Preço
 
-        # Define que as colunas restantes devem se esticar
-        self.editar_window.tableWidget.horizontalHeader().setSectionResizeMode(0, QtWidgets.QHeaderView.ResizeToContents)
-        self.editar_window.tableWidget.horizontalHeader().setSectionResizeMode(1, QtWidgets.QHeaderView.Fixed)
-        self.editar_window.tableWidget.horizontalHeader().setSectionResizeMode(2, QtWidgets.QHeaderView.Fixed)
-
         # Ajusta a largura da coluna de nome
-        self.editar_window.tableWidget.horizontalHeader().setSectionResizeMode(0, QtWidgets.QHeaderView.Stretch)    
+        self.editar_window.tableWidget.horizontalHeader().setSectionResizeMode(0, QtWidgets.QHeaderView.Stretch)
+
+        # Debugging: Mostra quantas linhas foram adicionadas
+        print(f"Total de linhas após busca: {linha}")
+
+
 
 
     def atualizar_produto(self, item):
@@ -307,6 +374,7 @@ class MainWindow(QtWidgets.QDialog):
     def exibir_imagem_pesquisa(self, window):
         pixmap = QtGui.QPixmap(r"PROJETOS1\search.png")  # Substitua pelo caminho correto da imagem da pesquisa
         self.ajustar_imagem(pixmap, window.label_10)  # Ajuste o nome do campo da pesquisa
+    
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)

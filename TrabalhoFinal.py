@@ -297,6 +297,7 @@ class Caixa:
             self._produtos['MASSA'].append(produto)
         elif isinstance(produto, Petisco):
             self._produtos['PETISCO'].append(produto)
+            
 
     def editar_produto(self, nome_produto):
         try:
