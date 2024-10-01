@@ -282,18 +282,26 @@ class MainWindow(QtWidgets.QDialog):
         if not texto_pesquisa:
             return
 
-        # Preenche a tabela com os produtos que correspondem ao texto de pesquisa
+        # Variável para controlar o número de linhas e rastrear produtos já exibidos
         linha = 0
+        produtos_exibidos = set()  # Usar um conjunto para rastrear produtos exibidos
+
+        # Preenche a tabela com os produtos que correspondem ao texto de pesquisa
         for tipo, conteudo in self.caixa._produtos.items():
             if isinstance(conteudo, list):
                 for produto in conteudo:
                     if produto._nome.lower().startswith(texto_pesquisa):
-                        self.remover_window.tableWidget.insertRow(linha)
-                        self.remover_window.tableWidget.setItem(linha, 0, QtWidgets.QTableWidgetItem(produto._nome))
-                        self.remover_window.tableWidget.setItem(linha, 1, QtWidgets.QTableWidgetItem(produto._unidade))
-                        self.remover_window.tableWidget.setItem(linha, 2, QtWidgets.QTableWidgetItem(f"{produto._preco:.2f}"))
-                        linha += 1
-                # Ajusta o tamanho das colunas
+                        # Verifica se o nome do produto já foi exibido
+                        if produto._nome not in produtos_exibidos:
+                            self.remover_window.tableWidget.insertRow(linha)
+                            self.remover_window.tableWidget.setItem(linha, 0, QtWidgets.QTableWidgetItem(produto._nome))
+                            self.remover_window.tableWidget.setItem(linha, 1, QtWidgets.QTableWidgetItem(produto._unidade))
+                            self.remover_window.tableWidget.setItem(linha, 2, QtWidgets.QTableWidgetItem(f"{produto._preco:.2f}"))
+                            
+                            produtos_exibidos.add(produto._nome)  # Adiciona o nome do produto ao conjunto
+                            linha += 1
+
+        # Ajusta o tamanho das colunas
         self.remover_window.tableWidget.horizontalHeader().setStretchLastSection(True)
 
         # Define as proporções das colunas
