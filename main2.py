@@ -262,53 +262,54 @@ class MainWindow(QtWidgets.QDialog):
         self.remover_window.exec_()'''
 
     def buscar_produto(self):
-        # Captura o texto inserido no campo de pesquisa
-        texto_pesquisa = self.editar_window.lineEdit.text().lower()
+            # Captura o texto inserido no campo de pesquisa
+            texto_pesquisa = self.editar_window.lineEdit.text().lower()
 
-        # Limpa o conteúdo atual da tabela
-        self.editar_window.tableWidget.clearContents()
-        self.editar_window.tableWidget.setRowCount(0)
+            # Limpa o conteúdo atual da tabela
+            self.editar_window.tableWidget.clearContents()
+            self.editar_window.tableWidget.setRowCount(0)
 
-        # Se o campo de pesquisa estiver vazio, não faz nada e retorna
-        if not texto_pesquisa:
-            print("Campo de pesquisa vazio. Tabela limpa.")
-            return
+            # Se o campo de pesquisa estiver vazio, não faz nada e retorna
+            if not texto_pesquisa:
+                print("Campo de pesquisa vazio. Tabela limpa.")
+                return
 
-        # Variável para controlar o número de linhas a serem exibidas
-        linha = 0
-        produtos_exibidos = set()  # Usar um conjunto para rastrear produtos exibidos
+            # Variável para controlar o número de linhas a serem exibidas
+            linha = 0
+            produtos_exibidos = set()  # Usar um conjunto para rastrear produtos exibidos
 
-        # Percorre todos os produtos no caixa
-        for tipo, conteudo in self.caixa._produtos.items():
-            if isinstance(conteudo, list):  # Considera apenas categorias com listas de produtos
-                for produto in conteudo:
-                    if produto._nome.lower().startswith(texto_pesquisa):
-                        # Verifica se o produto já foi exibido
-                        if produto not in produtos_exibidos:
-                            # Insere uma nova linha na tabela
-                            self.editar_window.tableWidget.insertRow(linha)
+            # Percorre todos os produtos no caixa
+            for tipo, conteudo in self.caixa._produtos.items():
+                if isinstance(conteudo, list):  # Considera apenas categorias com listas de produtos
+                    for produto in conteudo:
+                        if produto._nome.lower().startswith(texto_pesquisa):
+                            # Verifica se o nome do produto já foi exibido
+                            if produto._nome not in produtos_exibidos:
+                                # Insere uma nova linha na tabela
+                                self.editar_window.tableWidget.insertRow(linha)
 
-                            # Preenche as células com os dados do produto
-                            self.editar_window.tableWidget.setItem(linha, 0, QtWidgets.QTableWidgetItem(produto._nome))
-                            self.editar_window.tableWidget.setItem(linha, 1, QtWidgets.QTableWidgetItem(produto._unidade))
-                            self.editar_window.tableWidget.setItem(linha, 2, QtWidgets.QTableWidgetItem(f"{produto._preco:.2f}"))
+                                # Preenche as células com os dados do produto
+                                self.editar_window.tableWidget.setItem(linha, 0, QtWidgets.QTableWidgetItem(produto._nome))
+                                self.editar_window.tableWidget.setItem(linha, 1, QtWidgets.QTableWidgetItem(produto._unidade))
+                                self.editar_window.tableWidget.setItem(linha, 2, QtWidgets.QTableWidgetItem(f"{produto._preco:.2f}"))
 
-                            produtos_exibidos.add(produto)  # Adiciona o produto ao conjunto
-                            linha += 1
+                                produtos_exibidos.add(produto._nome)  # Adiciona o nome do produto ao conjunto
+                                linha += 1
 
-        # Ajusta o tamanho das colunas
-        self.editar_window.tableWidget.horizontalHeader().setStretchLastSection(True)
+            # Ajusta o tamanho das colunas
+            self.editar_window.tableWidget.horizontalHeader().setStretchLastSection(True)
 
-        # Define as proporções das colunas
-        self.editar_window.tableWidget.setColumnWidth(0, 200)  # Nome com largura maior
-        self.editar_window.tableWidget.setColumnWidth(1, 100)  # Unidade
-        self.editar_window.tableWidget.setColumnWidth(2, 100)  # Preço
+            # Define as proporções das colunas
+            self.editar_window.tableWidget.setColumnWidth(0, 200)  # Nome com largura maior
+            self.editar_window.tableWidget.setColumnWidth(1, 100)  # Unidade
+            self.editar_window.tableWidget.setColumnWidth(2, 100)  # Preço
 
-        # Ajusta a largura da coluna de nome
-        self.editar_window.tableWidget.horizontalHeader().setSectionResizeMode(0, QtWidgets.QHeaderView.Stretch)
 
-        # Debugging: Mostra quantas linhas foram adicionadas
-        print(f"Total de linhas após busca: {linha}")
+            # Ajusta a largura da coluna de nome
+            self.editar_window.tableWidget.horizontalHeader().setSectionResizeMode(0, QtWidgets.QHeaderView.Stretch)
+
+            # Debugging: Mostra quantas linhas foram adicionadas
+            print(f"Total de linhas após busca: {linha}")
 
 
 
