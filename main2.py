@@ -225,7 +225,7 @@ class MainWindow(QtWidgets.QDialog):
 
         # Conectar os botões de inserir e remover
         self.editar_window.pushButton_7.clicked.connect(self.chamar_tela_insercao)
-        #self.editar_window.pushButton_5.clicked.connect(self.chamar_tela_remocao)
+        self.editar_window.pushButton_5.clicked.connect(self.chamar_tela_remocao)
 
         # Exibir as imagens
         self.exibir_imagem_inserir(self.editar_window)
@@ -247,19 +247,95 @@ class MainWindow(QtWidgets.QDialog):
         self.inserir_window.pushButton.clicked.connect(self.adicionar_produto1)
 
         self.definir_imagem_voltar(self.inserir_window)
-        self.exibir_imagem_inserir(self.inserir_window)
-        self.exibir_imagem_editar(self.inserir_window)
-        self.exibir_imagem_remover(self.inserir_window)
-
         self.inserir_window.exec_()
 
+    
 
-    '''def chamar_tela_remocao(self):
-        # Lógica para abrir a tela de remoção
+
+    def chamar_tela_remocao(self):
+        # Abre a tela de remoção
         self.remover_window = QtWidgets.QDialog()
         uic.loadUi('ui\\remover.ui', self.remover_window)  # Carrega a interface de remoção
-        # Conectar ações e exibir a tela
-        self.remover_window.exec_()'''
+
+        self.definir_imagem_remover(self.remover_window)
+
+        # Conectar a pesquisa ao campo de texto
+        self.remover_window.lineEdit.textChanged.connect(self.buscar_produto_remocao)
+        # Conectar a remoção ao clique no botão de remoção
+        self.remover_window.pushButton.clicked.connect(self.remover_produto_selecionado)
+
+        # Conectar as imagens e o botão de voltar
+        self.definir_imagem_voltar(self.remover_window)
+        self.exibir_imagem_pesquisa(self.remover_window)
+        #self.exibir_imagem_lixeira(self.remover_window)
+
+
+        self.remover_window.exec_()
+
+    def buscar_produto_remocao(self):
+        texto_pesquisa = self.remover_window.lineEdit.text().lower()
+
+        # Limpar a tabela para uma nova pesquisa
+        self.remover_window.tableWidget.clearContents()
+        self.remover_window.tableWidget.setRowCount(0)
+
+        if not texto_pesquisa:
+            return
+
+        # Preenche a tabela com os produtos que correspondem ao texto de pesquisa
+        linha = 0
+        for tipo, conteudo in self.caixa._produtos.items():
+            if isinstance(conteudo, list):
+                for produto in conteudo:
+                    if produto._nome.lower().startswith(texto_pesquisa):
+                        self.remover_window.tableWidget.insertRow(linha)
+                        self.remover_window.tableWidget.setItem(linha, 0, QtWidgets.QTableWidgetItem(produto._nome))
+                        self.remover_window.tableWidget.setItem(linha, 1, QtWidgets.QTableWidgetItem(produto._unidade))
+                        self.remover_window.tableWidget.setItem(linha, 2, QtWidgets.QTableWidgetItem(f"{produto._preco:.2f}"))
+                        linha += 1
+                # Ajusta o tamanho das colunas
+        self.remover_window.tableWidget.horizontalHeader().setStretchLastSection(True)
+
+        # Define as proporções das colunas
+        self.remover_window.tableWidget.setColumnWidth(0, 200)  # Nome com largura maior
+        self.remover_window.tableWidget.setColumnWidth(1, 100)  # Unidade
+        self.remover_window.tableWidget.setColumnWidth(2, 100)  # Preço
+
+    def remover_produto_selecionado(self):
+        # Verificar se alguma linha foi selecionada
+        selected_row = self.remover_window.tableWidget.currentRow()
+        if selected_row == -1:
+            QtWidgets.QMessageBox.warning(self.remover_window, "Erro", "Nenhum produto selecionado.")
+            return
+
+        # Obter o nome do produto selecionado
+        nome_produto = self.remover_window.tableWidget.item(selected_row, 0).text()
+
+        # Exibir caixa de diálogo para confirmação da remoção
+        reply = QtWidgets.QMessageBox.question(
+            self.remover_window, 
+            'Confirmar Remoção', 
+            f"Tem certeza de que deseja remover o produto '{nome_produto}'?",
+            QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No, 
+            QtWidgets.QMessageBox.No
+        )
+
+        if reply == QtWidgets.QMessageBox.Yes:
+            # Percorrer o dicionário e remover o produto
+            for tipo, conteudo in self.caixa._produtos.items():
+                if isinstance(conteudo, list):
+                    for produto in conteudo:
+                        if produto._nome == nome_produto:
+                            conteudo.remove(produto)  # Remover o produto da lista
+
+                            # Remover a linha da tabela
+                            self.remover_window.tableWidget.removeRow(selected_row)
+
+                            QtWidgets.QMessageBox.information(self.remover_window, "Sucesso", "Produto removido com sucesso.")
+                            return
+        else:
+            QtWidgets.QMessageBox.information(self.remover_window, "Cancelado", "A remoção foi cancelada.")
+
 
     def buscar_produto(self):
             # Captura o texto inserido no campo de pesquisa
@@ -360,9 +436,16 @@ class MainWindow(QtWidgets.QDialog):
         window.pushButton_2.setIconSize(QtCore.QSize(32, 32))
         window.pushButton_2.clicked.connect(window.reject)
 
+    def definir_imagem_remover(self, window):
+        remover_icon = QtGui.QIcon(r'PROJETOS1\trash_5311905.png')  
+        window.pushButton.setIcon(remover_icon)
+        window.pushButton.setIconSize(QtCore.QSize(110, 110))
+
+    
+
     def exibir_imagem_inserir(self, window):
         pixmap = QtGui.QPixmap(r"PROJETOS1\check_15526414.png")  # Substitua pelo caminho correto da imagem de inserir
-        self.ajustar_imagem(pixmap, window.label_7)  # Ajuste o nome do botão
+        self.ajustar_imagem(pixmap, window.label_4)  # Ajuste o nome do botão
 
     def exibir_imagem_editar(self, window):
         pixmap = QtGui.QPixmap(r"PROJETOS1\square_14034491.png")  # Substitua pelo caminho correto da imagem de editar
@@ -376,6 +459,10 @@ class MainWindow(QtWidgets.QDialog):
         pixmap = QtGui.QPixmap(r"PROJETOS1\search.png")  # Substitua pelo caminho correto da imagem da pesquisa
         self.ajustar_imagem(pixmap, window.label_10)  # Ajuste o nome do campo da pesquisa
     
+    def exibir_imagem_lixeira(self, window):
+        pixmap = QtGui.QPixmap(r"PROJETOS1\trash_5311905.png")
+        self.ajustar_imagem(pixmap, window.label_10)
+
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
