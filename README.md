@@ -18,9 +18,11 @@ Projeto em andamento, o escopo, design e funcionamento podem ser alterados ao lo
 
 Requirements: 
 
-Python 3.x (back-end)\n
-Pyqt5 (Interface GUI)\n
-Pymongo (Banco de Dados)\n
+Python 3.x (back-end)
+
+Pyqt5 (Interface GUI)
+
+Pymongo (Banco de Dados)
 
 
 
