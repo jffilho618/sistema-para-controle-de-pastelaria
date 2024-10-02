@@ -346,81 +346,81 @@ class MainWindow(QtWidgets.QDialog):
 
 
     def buscar_produto(self):
-            # Captura o texto inserido no campo de pesquisa
-            texto_pesquisa = self.editar_window.lineEdit.text().lower()
+        # Captura o texto inserido no campo de pesquisa
+        texto_pesquisa = self.editar_window.lineEdit.text().lower()
 
-            # Limpa o conteúdo atual da tabela
-            self.editar_window.tableWidget.clearContents()
-            self.editar_window.tableWidget.setRowCount(0)
+        # Bloquear sinais para evitar que 'itemChanged' seja chamado durante a atualização
+        self.editar_window.tableWidget.blockSignals(True)
 
-            # Se o campo de pesquisa estiver vazio, não faz nada e retorna
-            if not texto_pesquisa:
-                print("Campo de pesquisa vazio. Tabela limpa.")
-                return
+        # Limpa o conteúdo atual da tabela
+        self.editar_window.tableWidget.clearContents()
+        self.editar_window.tableWidget.setRowCount(0)
 
-            # Variável para controlar o número de linhas a serem exibidas
-            linha = 0
-            produtos_exibidos = set()  # Usar um conjunto para rastrear produtos exibidos
+        # Se o campo de pesquisa estiver vazio, não faz nada e retorna
+        if not texto_pesquisa:
+            self.editar_window.tableWidget.blockSignals(False)
+            return
 
-            # Percorre todos os produtos no caixa
-            for tipo, conteudo in self.caixa._produtos.items():
-                if isinstance(conteudo, list):  # Considera apenas categorias com listas de produtos
-                    for produto in conteudo:
-                        if produto._nome.lower().startswith(texto_pesquisa):
-                            # Verifica se o nome do produto já foi exibido
-                            if produto._nome not in produtos_exibidos:
-                                # Insere uma nova linha na tabela
-                                self.editar_window.tableWidget.insertRow(linha)
+        # Variável para controlar o número de linhas a serem exibidas
+        linha = 0
+        produtos_exibidos = set()  # Usar um conjunto para rastrear produtos exibidos
 
-                                # Preenche as células com os dados do produto
-                                self.editar_window.tableWidget.setItem(linha, 0, QtWidgets.QTableWidgetItem(produto._nome))
-                                self.editar_window.tableWidget.setItem(linha, 1, QtWidgets.QTableWidgetItem(produto._unidade))
-                                self.editar_window.tableWidget.setItem(linha, 2, QtWidgets.QTableWidgetItem(f"{produto._preco:.2f}"))
+        # Percorre todos os produtos no caixa
+        for tipo, conteudo in self.caixa._produtos.items():
+            if isinstance(conteudo, list):  # Considera apenas categorias com listas de produtos
+                for produto in conteudo:
+                    if produto._nome.lower().startswith(texto_pesquisa):
+                        # Verifica se o nome do produto já foi exibido
+                        if produto._nome not in produtos_exibidos:
+                            # Insere uma nova linha na tabela
+                            self.editar_window.tableWidget.insertRow(linha)
 
-                                produtos_exibidos.add(produto._nome)  # Adiciona o nome do produto ao conjunto
-                                linha += 1
+                            # Criar itens da tabela
+                            item_nome = QtWidgets.QTableWidgetItem(produto._nome)
+                            item_unidade = QtWidgets.QTableWidgetItem(produto._unidade)
+                            item_preco = QtWidgets.QTableWidgetItem(f"{produto._preco:.2f}")
 
-            # Ajusta o tamanho das colunas
-            self.editar_window.tableWidget.horizontalHeader().setStretchLastSection(True)
+                            # Associar o produto a cada item da linha
+                            item_nome.setData(QtCore.Qt.UserRole, produto)
+                            item_unidade.setData(QtCore.Qt.UserRole, produto)
+                            item_preco.setData(QtCore.Qt.UserRole, produto)
 
-            # Define as proporções das colunas
-            self.editar_window.tableWidget.setColumnWidth(0, 200)  # Nome com largura maior
-            self.editar_window.tableWidget.setColumnWidth(1, 100)  # Unidade
-            self.editar_window.tableWidget.setColumnWidth(2, 100)  # Preço
+                            # Adicionar itens à tabela
+                            self.editar_window.tableWidget.setItem(linha, 0, item_nome)
+                            self.editar_window.tableWidget.setItem(linha, 1, item_unidade)
+                            self.editar_window.tableWidget.setItem(linha, 2, item_preco)
+
+                            produtos_exibidos.add(produto._nome)
+                            linha += 1
+
+        # Ajusta o tamanho das colunas
+        self.editar_window.tableWidget.horizontalHeader().setStretchLastSection(True)
+        self.editar_window.tableWidget.setColumnWidth(0, 200)  # Nome com largura maior
+        self.editar_window.tableWidget.setColumnWidth(1, 100)  # Unidade
+        self.editar_window.tableWidget.setColumnWidth(2, 100)  # Preço
+
+        # Desbloquear sinais após a atualização
+        self.editar_window.tableWidget.blockSignals(False)
 
 
-            # Ajusta a largura da coluna de nome
-            self.editar_window.tableWidget.horizontalHeader().setSectionResizeMode(0, QtWidgets.QHeaderView.Stretch)
-
-            # Debugging: Mostra quantas linhas foram adicionadas
-            print(f"Total de linhas após busca: {linha}")
 
 
 
 
     def atualizar_produto(self, item):
-        # Desconectar temporariamente o sinal de 'itemChanged' para evitar loops recursivos
+        # Bloquear sinais para evitar loops recursivos
         self.editar_window.tableWidget.blockSignals(True)
 
-        row = item.row()
-        col = item.column()
+        # Recuperar o produto associado ao item
+        produto_encontrado = item.data(QtCore.Qt.UserRole)
 
-        # Encontrar o produto correspondente
-        produto_encontrado = None
-        tipo_produto = None
-
-        # Percorre as categorias para encontrar o produto
-        for tipo, conteudo in self.caixa._produtos.items():
-            if isinstance(conteudo, list):  # Verifica se o conteúdo é uma lista
-                if row < len(conteudo):  # Verifica se a linha está dentro do range da lista
-                    produto_encontrado = conteudo[row]
-                    tipo_produto = tipo
-                    break
-
-        # Verifica se o produto foi encontrado
         if produto_encontrado:
+            col = item.column()
+
             if col == 0:  # Nome
                 produto_encontrado._nome = item.text()
+                # Reassociar o produto ao item com o novo nome
+                item.setData(QtCore.Qt.UserRole, produto_encontrado)
             elif col == 1:  # Unidade
                 produto_encontrado._unidade = item.text()
             elif col == 2:  # Preço
@@ -429,12 +429,16 @@ class MainWindow(QtWidgets.QDialog):
                 except ValueError:
                     # Lida com o erro de conversão, se o texto não for um número
                     QtWidgets.QMessageBox.warning(self.editar_window, "Erro", "Por favor, insira um preço válido.")
+                    # Restaurar o valor anterior
+                    item.setText(f"{produto_encontrado._preco:.2f}")
+        else:
+            # Produto não foi encontrado (possivelmente devido a um problema na associação)
+            pass  # Evitar mostrar a mensagem repetidamente
 
         # Reativar o sinal de 'itemChanged' após a atualização
         self.editar_window.tableWidget.blockSignals(False)
 
-        # Recarrega a tabela para mostrar as atualizações, se necessário
-        # self.buscar_produto()  # Isso pode ser removido se o loop recursivo não for desejado
+
 
 
 
